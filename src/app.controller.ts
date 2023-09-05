@@ -1,5 +1,12 @@
-import { Controller, Get } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { AppService } from './app.service';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller()
 export class AppController {
@@ -8,5 +15,14 @@ export class AppController {
   @Get()
   getHello(): string {
     return this.appService.getHello();
+  }
+
+  @Post()
+  @UseInterceptors(FileInterceptor('file'))
+  async convert(@UploadedFile() file: Express.Multer.File) {
+    //console.log('AAAA', file.originalname, file.filename);
+    const retval = await this.appService.convertPdfToImage(file.filename);
+
+    return { data: retval };
   }
 }
