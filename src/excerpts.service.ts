@@ -17,8 +17,6 @@ export class ExcerptService {
 
   async parseFile(file: string) {
     // Use fs.readFile() method to read the file
-
-    console.log(file, file.endsWith('html'));
     if (file.endsWith('html') || file.endsWith('htm')) {
       const data = fs.readFileSync('./files/erste.htm', {
         encoding: 'latin1',
@@ -27,7 +25,7 @@ export class ExcerptService {
       return this.htmlParseService.parseHtml(data);
     }
     if (file.endsWith('xml')) {
-      const data = fs.readFileSync('./files/ckb.xml', {
+      const data = fs.readFileSync('./files/hb.xml', {
         encoding: 'latin1',
         flag: 'r',
       });
