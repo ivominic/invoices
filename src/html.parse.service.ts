@@ -52,11 +52,110 @@ export class HtmlParseService {
     const year = numberAndYear.split('/')[1];
     retVal['number'] = number;
     retVal['year'] = year;
+    retVal['table'] = this.tableParseErsteBank(tables[3]);
 
     // firstTable.querySelectorAll('tr').forEach((item) => {
     //   console.log('Item', item.toString());
     // });
 
     return JSON.stringify(retVal);
+  }
+
+  tableParseErsteBank(table) {
+    const retVal = {};
+    const rows = table.querySelectorAll('tr');
+    if (rows.length < 5) {
+      return retVal;
+    }
+    const initialAmount = this.extractSingleCellNumber(
+      rows[1].querySelectorAll('td')[1],
+    );
+    const finalAmount = this.extractSingleCellNumber(
+      rows[rows.length - 1].querySelectorAll('td')[
+        rows[rows.length - 1].querySelectorAll('td').length - 1
+      ],
+    );
+    const balanceRow = rows[rows.length - 2].querySelectorAll('td');
+    const turnoverArray = this.extractArrayOfCellNumbers(
+      balanceRow[balanceRow.length - 2],
+    );
+    const finalBalanceArray = this.extractArrayOfCellNumbers(
+      balanceRow[balanceRow.length - 1],
+    );
+
+    retVal['initialAmount'] = initialAmount;
+    retVal['finalAmount'] = finalAmount;
+    retVal['turnover1'] = turnoverArray[0];
+    retVal['turnover2'] = turnoverArray[1];
+    retVal['finalBalance1'] = finalBalanceArray[0];
+    retVal['finalBalance2'] = finalBalanceArray[1];
+    retVal['table'] = this.extractErsteMainTableData(rows);
+    return retVal;
+  }
+
+  extractErsteMainTableData(rows) {
+    const tempArray = [];
+
+    for (let i = 2; i < rows.length - 2; i++) {
+      const tds = rows[i].querySelectorAll('td');
+      const tempItem = {};
+
+      const rawDates = this.extractArrayOfCellValues(tds[0]);
+      tempItem['documentDate'] = rawDates[0];
+      tempItem['currencyDate'] = rawDates[1];
+      tempItem['processingDate'] = rawDates[2];
+
+      const rawInitiator = this.extractArrayOfCellValues(tds[1]);
+      tempItem['principal'] = rawInitiator[0];
+      tempItem['accountNumber'] = rawInitiator[1];
+      tempItem['rate'] = rawInitiator[2];
+
+      const rawPurpose = this.extractArrayOfCellValues(tds[2]);
+      tempItem['sequenceNumber'] = rawPurpose[0];
+      tempItem['transferPurpose'] = rawPurpose[1];
+      tempItem['paymentCode'] = rawPurpose[2];
+
+      const rawTransaction = this.extractArrayOfCellValues(tds[3]);
+      tempItem['debitNumber'] = rawTransaction[0];
+      tempItem['approvalNumber'] = rawTransaction[1];
+      tempItem['referentRelation'] = rawTransaction[2];
+
+      tempItem['expense'] = this.extractSingleCellNumber(tds[4]);
+      tempItem['income'] = this.extractSingleCellNumber(tds[5]);
+
+      tempArray.push(tempItem);
+    }
+
+    return tempArray;
+  }
+
+  extractSingleCellNumber(td) {
+    return td.innerHTML
+      .replace('<b>', '')
+      .replace('</b>', '')
+      .replace(',', '.')
+      .replaceAll('"', '')
+      .trim();
+  }
+
+  extractArrayOfCellNumbers(td) {
+    const tempValue = td.innerHTML
+      .replace('<b>', '')
+      .replace('</b>', '')
+      .replace(',', '.')
+      .replaceAll('"', '')
+      .trim();
+    const returnArray = tempValue.split('<br>');
+    return returnArray;
+  }
+
+  extractArrayOfCellValues(td) {
+    const tempValue = td.innerHTML
+      .replace('<b>', '')
+      .replace('</b>', '')
+      .replaceAll('"', '')
+      .trim();
+    const returnArray = tempValue.split('<br>');
+    return returnArray;
   }
 }
