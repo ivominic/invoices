@@ -1,19 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { parse } from 'node-html-parser';
+//import { parse } from 'node-html-parser';
+import * as cheerio from 'cheerio';
 
 @Injectable()
 export class HtmlParseService {
   async parseHtml(data: string) {
-    // Use fs.readFile() method to read the file
-    /*fs.readdir('./files/', (err, files) => {
-      files.forEach((file) => {
-        console.log('AAAAAA', file.toString());
-        if (file.toString().endsWith('xml')) {
-          console.log('BBBCCCCcB', fs.readFileSync(file, 'utf-8').toString());
-        }
-      });
-    });*/
-
     let retVal: string = '';
     retVal === '' && (retVal = this.parseErsteBank(data));
 
@@ -21,141 +12,162 @@ export class HtmlParseService {
   }
 
   parseErsteBank(data) {
-    const root = parse(data);
-    const tables = root.querySelectorAll('table');
-    const bankName = tables[0]
-      .querySelectorAll('tr')[1]
-      .querySelector('td').innerHTML;
-    if (!bankName.toString().trim().toUpperCase().startsWith('ERSTE BANK AD')) {
+    const dataJson = {};
+    const $ = cheerio.load(data);
+    const firstTable = $('table');
+    const bankName = firstTable.find('tr').next('tr').find('td').html().trim();
+    if (!bankName.toUpperCase().startsWith('ERSTE BANK AD')) {
       return '';
     }
 
-    const retVal = { bank: 'ERSTE' };
-    const ps = root.querySelectorAll('p');
-    const tempDate = ps[1]?.innerHTML.trim();
-    const excerptDate = tempDate.substring(
-      tempDate.length - 15,
-      tempDate.length - 4,
-    );
-    retVal['date'] = excerptDate;
+    dataJson['bank'] = 'ERSTE';
+    const rDate = $('p').next('p').text();
+    const excerptDate = rDate.substring(rDate.length - 12, rDate.length).trim();
+    dataJson['date'] = excerptDate;
 
-    const clientName = tables[1]
-      .querySelector('tr')
-      .querySelectorAll('td')[1].innerHTML;
-    retVal['clientName'] = clientName;
-
-    const thirdTableRows = tables[2].querySelectorAll('tr');
-    const accountNumber = thirdTableRows[0].querySelectorAll('td')[1].innerHTML;
-    retVal['accountNumber'] = accountNumber;
-    const numberAndYear = thirdTableRows[3].querySelectorAll('td')[1].innerHTML;
+    const thirdTable = $('table').next('table').next('table');
+    const accountNumber = thirdTable.find('tr').find('td').next('td').html();
+    dataJson['accountNumber'] = accountNumber;
+    const numberAndYear = thirdTable
+      .find('tr')
+      .next('tr')
+      .next('tr')
+      .next('tr')
+      .find('td')
+      .next('td')
+      .html();
     const number = numberAndYear.split('/')[0];
     const year = numberAndYear.split('/')[1];
-    retVal['number'] = number;
-    retVal['year'] = year;
-    retVal['table'] = this.tableParseErsteBank(tables[3]);
+    dataJson['number'] = number;
+    dataJson['year'] = year;
 
-    // firstTable.querySelectorAll('tr').forEach((item) => {
-    //   console.log('Item', item.toString());
-    // });
-
-    return JSON.stringify(retVal);
+    const forthTable = $('table').next('table').next('table').next('table');
+    dataJson['table'] = this.tableParseErsteBank(forthTable, dataJson);
+    return JSON.stringify(dataJson);
   }
 
-  tableParseErsteBank(table) {
-    const retVal = {};
-    const rows = table.querySelectorAll('tr');
-    if (rows.length < 5) {
-      return retVal;
-    }
-    const initialAmount = this.extractSingleCellNumber(
-      rows[1].querySelectorAll('td')[1],
-    );
-    const finalAmount = this.extractSingleCellNumber(
-      rows[rows.length - 1].querySelectorAll('td')[
-        rows[rows.length - 1].querySelectorAll('td').length - 1
-      ],
-    );
-    const balanceRow = rows[rows.length - 2].querySelectorAll('td');
-    const turnoverArray = this.extractArrayOfCellNumbers(
-      balanceRow[balanceRow.length - 2],
-    );
-    const finalBalanceArray = this.extractArrayOfCellNumbers(
-      balanceRow[balanceRow.length - 1],
-    );
-
-    retVal['initialAmount'] = initialAmount;
-    retVal['finalAmount'] = finalAmount;
-    retVal['turnover1'] = turnoverArray[0];
-    retVal['turnover2'] = turnoverArray[1];
-    retVal['finalBalance1'] = finalBalanceArray[0];
-    retVal['finalBalance2'] = finalBalanceArray[1];
-    retVal['table'] = this.extractErsteMainTableData(rows);
-    return retVal;
-  }
-
-  extractErsteMainTableData(rows) {
+  /**
+   * This method reads initial amount from the first row, final amount from the last row.
+   * Turnovers and final balances from the row previous from the last, and that's where iteration of rows stops.
+   * Parsing data from each row is done from the extractErsteMainRow method, and it's results are added to the array.
+   * @param table - main table of htm. Contains details for all changes
+   * @param dataJson - response object
+   * @returns
+   */
+  tableParseErsteBank(table, dataJson) {
     const tempArray = [];
+    const rows = table.find('tr');
+    let isAvailable = true;
+    let row = rows.next('tr');
+    dataJson['initialAmount'] = this.extractSingleCellNumber(
+      row.find('td').next('td').next('td').html(),
+    );
 
-    for (let i = 2; i < rows.length - 2; i++) {
-      const tds = rows[i].querySelectorAll('td');
-      const tempItem = {};
-
-      const rawDates = this.extractArrayOfCellValues(tds[0]);
-      tempItem['documentDate'] = rawDates[0];
-      tempItem['currencyDate'] = rawDates[1];
-      tempItem['processingDate'] = rawDates[2];
-
-      const rawInitiator = this.extractArrayOfCellValues(tds[1]);
-      tempItem['principal'] = rawInitiator[0];
-      tempItem['accountNumber'] = rawInitiator[1];
-      tempItem['rate'] = rawInitiator[2];
-
-      const rawPurpose = this.extractArrayOfCellValues(tds[2]);
-      tempItem['sequenceNumber'] = rawPurpose[0];
-      tempItem['transferPurpose'] = rawPurpose[1];
-      tempItem['paymentCode'] = rawPurpose[2];
-
-      const rawTransaction = this.extractArrayOfCellValues(tds[3]);
-      tempItem['debitNumber'] = rawTransaction[0];
-      tempItem['approvalNumber'] = rawTransaction[1];
-      tempItem['referentRelation'] = rawTransaction[2];
-
-      tempItem['expense'] = this.extractSingleCellNumber(tds[4]);
-      tempItem['income'] = this.extractSingleCellNumber(tds[5]);
-
-      tempArray.push(tempItem);
+    while (isAvailable) {
+      row = row.next('tr');
+      if (row.find('td').html().includes('Stanje na dan')) {
+        isAvailable = false;
+        const fifthCell = row
+          .find('td')
+          .next('td')
+          .next('td')
+          .next('td')
+          .next('td')
+          .html();
+        const sixthCell = row
+          .find('td')
+          .next('td')
+          .next('td')
+          .next('td')
+          .next('td')
+          .next('td')
+          .html();
+        const turnoverArray = this.extractArrayOfCellNumbers(fifthCell);
+        dataJson['turnover1'] = turnoverArray[0].trim();
+        dataJson['turnover2'] = turnoverArray[1].trim();
+        const finalBalanceArray = this.extractArrayOfCellNumbers(sixthCell);
+        dataJson['finalBalance1'] = finalBalanceArray[0].trim();
+        dataJson['finalBalance2'] = finalBalanceArray[1].trim();
+      } else {
+        tempArray.push(this.extractErsteMainRow(row));
+      }
     }
+    dataJson['finalAmount'] = this.extractSingleCellNumber(
+      row.next('tr').find('td').next('td').next('td').html(),
+    );
 
     return tempArray;
   }
 
-  extractSingleCellNumber(td) {
-    return td.innerHTML
-      .replace('<b>', '')
-      .replace('</b>', '')
-      .replace(',', '.')
+  extractErsteMainRow(row) {
+    const tempItem = {};
+
+    let tempCell = row.find('td');
+    const rawDates = this.extractArrayOfCellValues(tempCell.html());
+    tempItem['documentDate'] = rawDates[0];
+    tempItem['currencyDate'] = rawDates[1];
+    tempItem['processingDate'] = rawDates[2];
+
+    tempCell = tempCell.next('td');
+    const rawInitiator = this.extractArrayOfCellValues(tempCell.html());
+    tempItem['principal'] = rawInitiator[0];
+    tempItem['accountNumber'] = rawInitiator[1];
+    tempItem['rate'] = rawInitiator[2];
+
+    tempCell = tempCell.next('td');
+    const rawPurpose = this.extractArrayOfCellValues(tempCell.html());
+    tempItem['sequenceNumber'] = rawPurpose[0];
+    tempItem['transferPurpose'] = rawPurpose[1];
+    tempItem['paymentCode'] = rawPurpose[2];
+
+    tempCell = tempCell.next('td');
+    const rawTransaction = this.extractArrayOfCellValues(tempCell.html());
+    tempItem['debitNumber'] = rawTransaction[0];
+    tempItem['approvalNumber'] = rawTransaction[1];
+    tempItem['referentRelation'] = rawTransaction[2];
+
+    tempCell = tempCell.next('td');
+    tempItem['expense'] = this.extractSingleCellNumber(tempCell.html());
+    tempCell = tempCell.next('td');
+    tempItem['income'] = this.extractSingleCellNumber(tempCell.html());
+
+    return tempItem;
+  }
+
+  extractSingleCellNumber(content: string) {
+    return content
+      .replaceAll('<b>', '')
+      .replaceAll('</b>', '')
+      .replaceAll(',', '.')
       .replaceAll('"', '')
       .trim();
   }
 
-  extractArrayOfCellNumbers(td) {
-    const tempValue = td.innerHTML
-      .replace('<b>', '')
-      .replace('</b>', '')
-      .replace(',', '.')
+  extractArrayOfCellNumbers(content) {
+    const tempValue = content
+      .replaceAll('<b>', '')
+      .replaceAll('</b>', '')
+      .replaceAll('&nbsp;', '')
+      .replaceAll(',', '.')
       .replaceAll('"', '')
-      .trim();
+      .replaceAll(' ', '');
     const returnArray = tempValue.split('<br>');
     return returnArray;
   }
 
-  extractArrayOfCellValues(td) {
-    const tempValue = td.innerHTML
-      .replace('<b>', '')
-      .replace('</b>', '')
+  extractArrayOfCellValues(content) {
+    let tempValue = content
+      .replaceAll('<b>', '')
+      .replaceAll('</b>', '')
+      .replaceAll('&nbsp;', '')
       .replaceAll('"', '')
       .trim();
+    tempValue = this.replaceNationalCharacters(tempValue);
     const returnArray = tempValue.split('<br>');
     return returnArray;
+  }
+
+  replaceNationalCharacters(content) {
+    return content.replaceAll('è', 'č');
   }
 }
