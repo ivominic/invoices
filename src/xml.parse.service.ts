@@ -64,8 +64,8 @@ export class XmlParseService {
 
   tableParseCkb(table) {
     const tempArray = [];
-    const tempItem = {};
     table.children.forEach((item) => {
+      const tempItem = {};
       item.children.forEach((element) => {
         if (element.name === 'trntype') {
           tempItem['trnType'] = element.content;
