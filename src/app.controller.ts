@@ -32,6 +32,6 @@ export class AppController {
 
   @Get('parse')
   async parseFile() {
-    return await this.excerptService.parseFile('erste.htm');
+    return await this.excerptService.parseFile('ckb.xml');
   }
 }

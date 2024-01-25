@@ -30,13 +30,9 @@ export class XmlParseService {
     }
 
     obj.root.children.forEach((element) => {
-      console.log('**********', element.name);
-      console.log('----------', element.children);
-      console.log('..........', element.attributes);
-
       element.name === 'acctid' && (retVal['accountNumber'] = element.content);
       element.name === 'stmtnumber' && (retVal['number'] = element.content);
-      if (element.name === 'ledgerbal') {
+      if (element.name === 'availbal') {
         element.children.forEach((item) => {
           if (item.name === 'dtasof') {
             const rawDate = item.content;
@@ -46,11 +42,105 @@ export class XmlParseService {
             retVal['year'] = year;
             retVal['date'] = `${day}.${month}.${year}.`;
           }
+          if (item.name === 'balamt') {
+            retVal['finalAmount'] = item.content;
+          }
         });
+      }
+      if (element.name === 'ledgerbal') {
+        element.children.forEach((item) => {
+          if (item.name === 'balamt') {
+            retVal['initialAmount'] = item.content;
+          }
+        });
+      }
+      if (element.name === 'trnlist') {
+        retVal['table'] = this.tableParseCkb(element);
       }
     });
 
     return JSON.stringify(retVal);
+  }
+
+  tableParseCkb(table) {
+    const tempArray = [];
+    const tempItem = {};
+    table.children.forEach((item) => {
+      item.children.forEach((element) => {
+        if (element.name === 'trntype') {
+          tempItem['trnType'] = element.content;
+        }
+        if (element.name === 'fitid') {
+          tempItem['fitId'] = element.content;
+        }
+        if (element.name === 'benefit') {
+          tempItem['benefit'] = element.content;
+        }
+        if (element.name === 'payeeinfo') {
+          element.children.forEach((record) => {
+            if (record.name === 'name') {
+              tempItem['payeeInfoName'] = record.content;
+            }
+            if (record.name === 'city') {
+              tempItem['payeeInfoCity'] = record.content;
+            }
+          });
+        }
+        if (element.name === 'payeeaccountinfo') {
+          element.children.forEach((record) => {
+            if (record.name === 'acctid') {
+              tempItem['payeeAccountInfoId'] = record.content;
+            }
+            if (record.name === 'bankid') {
+              tempItem['payeeAccountInfoBankId'] = record.content;
+            }
+            if (record.name === 'bankname') {
+              tempItem['payeeAccountInfoBankName'] = record.content;
+            }
+          });
+        }
+        if (element.name === 'dtposted') {
+          tempItem['datePosted'] = element.content;
+        }
+        if (element.name === 'trnamt') {
+          tempItem['trnAmount'] = element.content;
+        }
+        if (element.name === 'purpose') {
+          tempItem['purpose'] = element.content;
+        }
+        if (element.name === 'purposecode') {
+          tempItem['purposeCode'] = element.content;
+        }
+        if (element.name === 'curdef') {
+          tempItem['curDef'] = element.content;
+        }
+        if (element.name === 'trnplace') {
+          tempItem['trnPlace'] = element.content;
+        }
+        if (element.name === 'dtuser') {
+          tempItem['dateUser'] = element.content;
+        }
+        if (element.name === 'dtavail') {
+          tempItem['dateAvailable'] = element.content;
+        }
+        if (element.name === 'refmodel') {
+          tempItem['refModel'] = element.content;
+        }
+        if (element.name === 'payeerefmodel') {
+          tempItem['payeeRefModel'] = element.content;
+        }
+        if (element.name === 'urgency') {
+          tempItem['urgency'] = element.content;
+        }
+        if (element.name === 'fee') {
+          tempItem['fee'] = element.content;
+        }
+      });
+
+      tempArray.push(tempItem);
+    });
+
+    return tempArray;
   }
 
   parseHB(data) {
