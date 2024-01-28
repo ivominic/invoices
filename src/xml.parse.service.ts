@@ -175,13 +175,9 @@ export class XmlParseService {
     }
 
     obj.root.children[0].children.forEach((element) => {
-      console.log('**********', element.name);
-      console.log('----------', element.children);
-      console.log('..........', element.attributes);
-
       element.name === 'acctid' && (retVal['accountNumber'] = element.content);
       element.name === 'stmtnumber' && (retVal['number'] = element.content);
-      if (element.name === 'ledgerbal') {
+      if (element.name === 'availbal') {
         element.children.forEach((item) => {
           if (item.name === 'dtasof') {
             const rawDate = item.content;
@@ -191,7 +187,20 @@ export class XmlParseService {
             retVal['year'] = year;
             retVal['date'] = `${day}.${month}.${year}.`;
           }
+          if (item.name === 'balamt') {
+            retVal['finalAmount'] = item.content;
+          }
         });
+      }
+      if (element.name === 'ledgerbal') {
+        element.children.forEach((item) => {
+          if (item.name === 'balamt') {
+            retVal['initialAmount'] = item.content;
+          }
+        });
+      }
+      if (element.name === 'trnlist') {
+        retVal['table'] = this.tableParseCkb(element);
       }
     });
 
