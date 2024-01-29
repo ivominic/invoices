@@ -26,6 +26,7 @@
     "@types/multer": "^1.4.7",
     "cheerio": "^1.0.0-rc.12",
     "pdf-img-convert": "^1.2.1",
+    "pdf.js-extract": "^0.2.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "xml-parser": "^1.2.1"
