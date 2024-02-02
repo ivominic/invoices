@@ -25,13 +25,13 @@ export class AppController {
   @UseInterceptors(FileInterceptor('file'))
   async convert(@UploadedFile() file: Express.Multer.File) {
     //console.log('AAAA', file.originalname, file.filename);
-    const retval = await this.appService.convertPdfToImage(file.filename);
+    const retVal = await this.appService.convertPdfToImage(file.filename);
 
-    return { data: retval };
+    return { data: retVal };
   }
 
   @Get('parse')
   async parseFile() {
-    return await this.excerptService.parseFile('prva1.pdf');
+    return await this.excerptService.parseFile('hb.xml');
   }
 }

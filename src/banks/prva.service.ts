@@ -14,7 +14,21 @@ export class PrvaPdfService {
     const clientData = this.readClientData(data.pages[0].content);
     const summaryTable = this.readSummaryTable(data.pages[0].content);
     retVal = { ...retVal, ...clientData, ...summaryTable };
-    retVal['table'] = this.readMainTable(data.pages[0].content);
+
+    let tableArray = [];
+    let isValidTable = true;
+    for (let i = 0; i < data.pages.length; i++) {
+      if (isValidTable) {
+        const tempArray = this.readMainTable(data.pages[i].content, i);
+        tableArray = [...tableArray, ...tempArray];
+      }
+      data.pages[i].content.forEach((element) => {
+        if (element.str === 'NEIZVRŠENI NALOZI') {
+          isValidTable = false;
+        }
+      });
+    }
+    retVal['table'] = tableArray;
 
     return retVal;
   }
@@ -167,7 +181,7 @@ export class PrvaPdfService {
     return retVal;
   }
 
-  readMainTable(content) {
+  readMainTable(content, pageNumber) {
     const sequenceText: string = 'RB',
       receiverText: string = 'Primalac plaćanja/platilac',
       originText: string = 'Porijeklo',
@@ -192,9 +206,17 @@ export class PrvaPdfService {
     const tempArray = [],
       yArray = [];
 
+    if (pageNumber) {
+      commonY = 45;
+    }
+    let maxY = 30000; //If there are non executed transaction, we need to stop rows parsing
+
     content.forEach((element) => {
       const value = element.str.trim();
-      if (value && element.y < 300 && element.y > 240) {
+      if (value === 'NEIZVRŠENI NALOZI') {
+        maxY = element.y; //If there are non executed transaction, we need to stop rows parsing
+      }
+      if (value && element.y < commonY + 60 && element.y > commonY) {
         if (value === sequenceText) {
           sequenceX = element.x;
           commonY = element.y;
@@ -208,7 +230,12 @@ export class PrvaPdfService {
         value === modelText && (modelX = element.x);
         value === complaintText && (complaintX = element.x);
       }
-      if (value && element.y > commonY && element.x <= sequenceX) {
+      if (
+        value &&
+        element.y > commonY &&
+        element.y < maxY &&
+        element.x <= sequenceX
+      ) {
         if (value !== sequenceText && !value.startsWith(createdText)) {
           yArray.push(element.y);
         }
@@ -261,7 +288,7 @@ export class PrvaPdfService {
             if (element.y > y && element.y < y + 10) {
               tempVal['debt'] = value.replaceAll('.', '').replace(',', '.');
             } else {
-              tempVal['fee'] = value.replaceAll('.', '').replace(',', '.');
+              tempVal['fee'] = value;
             }
           }
           if (x >= approvalX && x < codeX) {
