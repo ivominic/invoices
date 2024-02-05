@@ -7,6 +7,7 @@ import { HtmlParseService } from './html.parse.service';
 import { XmlParseService } from './xml.parse.service';
 import { PdfParseService } from './pdf.parse.service';
 import { PrvaPdfService } from './banks/prva.service';
+import { AddikoPdfService } from './banks/addiko.service';
 
 @Module({
   imports: [MulterModule.register({ dest: './files' })],
@@ -18,6 +19,7 @@ import { PrvaPdfService } from './banks/prva.service';
     XmlParseService,
     PdfParseService,
     PrvaPdfService,
+    AddikoPdfService,
   ],
   exports: [],
 })
