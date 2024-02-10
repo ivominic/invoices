@@ -18,13 +18,12 @@ export class LovcenPdfService {
     );
     retVal = { ...retVal, ...tempAdditionalData };
 
-    /*let tableArray = [];
+    let tableArray = [];
     for (let i = 0; i < data.pages.length; i++) {
-      const tempArray = this.readMainTable(data.pages[i].content, tableArray);
-      
+      const tempArray = this.readMainTable(data.pages[i].content);
       tableArray = [...tableArray, ...tempArray];
     }
-    retVal['table'] = tableArray;*/
+    retVal['table'] = tableArray;
 
     return retVal;
   }
@@ -133,6 +132,116 @@ export class LovcenPdfService {
       }
     });
 
+    return retVal;
+  }
+
+  readMainTable(content) {
+    const col1Text: string = '1',
+      col2Text: string = '2',
+      col3Text: string = '3',
+      col4Text: string = '4',
+      col5Text: string = '5',
+      col6Text: string = '6',
+      col7Text: string = '7',
+      col8Text: string = '8',
+      commonY = this.getTitleRowY(content);
+    let col1X = 50,
+      col2X,
+      col3X,
+      col4X,
+      col5X,
+      col6X,
+      col7X,
+      col8X;
+    const margin = 5;
+    const tempArray = [],
+      yArray = [];
+
+    content.forEach((element) => {
+      const value = element.str.trim();
+      if (value && element.y < commonY + 3 && element.y > commonY - 3) {
+        value === col1Text && (col1X = element.x);
+        value === col2Text && (col2X = element.x);
+        value === col3Text && (col3X = element.x);
+        value === col4Text && (col4X = element.x);
+        value === col5Text && (col5X = element.x);
+        value === col6Text && (col6X = element.x);
+        value === col7Text && (col7X = element.x);
+        value === col8Text && (col8X = element.x);
+      }
+      if (value && element.y > commonY && element.x <= col1X) {
+        const dateArray = value.split('.');
+        if (
+          dateArray.length === 3 &&
+          dateArray[0].length === 2 &&
+          dateArray[1].length === 2 &&
+          dateArray[2].length === 4
+        ) {
+          yArray.push(element.y);
+        }
+      }
+    });
+
+    for (let i = 0; i < yArray.length; i++) {
+      const y = yArray[i];
+      let nextY = y + 30;
+      i < yArray.length - 1 && (nextY = yArray[i + 1]);
+      const tempVal = {};
+
+      content.forEach((element) => {
+        const value = element.str.trim();
+        if (value && element.y > y - margin && element.y < nextY - margin) {
+          const x = element.x;
+          if (x <= col1X) {
+            tempVal['col1'] = value;
+          }
+          if (x >= col1X - margin && x < col3X) {
+            const rgx = /^[0-9,\-]*$/;
+            if (rgx.test(value)) {
+              tempVal['col3'] = value;
+            } else {
+              tempVal['col2'] = value;
+            }
+          }
+          if (x >= col3X - margin && x < col5X) {
+            tempVal['col4'] = value.replaceAll('.', '').replace(',', '.');
+          }
+          if (x >= col5X - margin && x < col5X + 40) {
+            tempVal['col5'] = value.replaceAll('.', '').replace(',', '.');
+          }
+          if (x >= col5X + 40 && x < col6X - 50) {
+            if (element.y >= y - margin && element.y < y + 10) {
+              tempVal['col6-1'] = value;
+            } else {
+              tempVal['col6-2'] = value;
+            }
+          }
+          if (x >= col7X - 50 && x < col8X - 50) {
+            if (element.y >= y - margin && element.y < y + 10) {
+              tempVal['col7-1'] = value;
+            } else {
+              tempVal['col7-2'] = value;
+            }
+          }
+          if (x >= col8X - 50) {
+            tempVal['col8'] = value;
+          }
+        }
+      });
+      tempArray.push(tempVal);
+    }
+
+    return tempArray;
+  }
+
+  getTitleRowY(content) {
+    let retVal = 0;
+    content.forEach((el) => {
+      const value = el.str.trim();
+      if (value === '1' && el.x < 40 && el.x > 35 && el.y > 170 && el.y < 220) {
+        retVal = el.y;
+      }
+    });
     return retVal;
   }
 }
