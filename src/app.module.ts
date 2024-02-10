@@ -6,8 +6,13 @@ import { ExcerptService } from './excerpts.service';
 import { HtmlParseService } from './html.parse.service';
 import { XmlParseService } from './xml.parse.service';
 import { PdfParseService } from './pdf.parse.service';
-import { PrvaPdfService } from './banks/prva.service';
 import { AddikoPdfService } from './banks/addiko.service';
+import { LovcenPdfService } from './banks/lovcen.services';
+import { PrvaPdfService } from './banks/prva.service';
+import { AdriaticPdfService } from './banks/adriatic.services';
+import { UniversalPdfService } from './banks/universal.services';
+import { ZapadPdfService } from './banks/zapad.service';
+import { ZiraatPdfService } from './banks/ziraat.services';
 
 @Module({
   imports: [MulterModule.register({ dest: './files' })],
@@ -18,8 +23,13 @@ import { AddikoPdfService } from './banks/addiko.service';
     HtmlParseService,
     XmlParseService,
     PdfParseService,
-    PrvaPdfService,
     AddikoPdfService,
+    AdriaticPdfService,
+    LovcenPdfService,
+    PrvaPdfService,
+    UniversalPdfService,
+    ZapadPdfService,
+    ZiraatPdfService,
   ],
   exports: [],
 })
