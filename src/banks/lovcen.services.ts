@@ -13,11 +13,15 @@ export class LovcenPdfService {
     const clientData = this.readClientData(data.pages[0].content);
     retVal = { ...retVal, ...clientData };
 
+    const tempAdditionalData = this.readSummaryTable(
+      data.pages[data.pages.length - 1].content,
+    );
+    retVal = { ...retVal, ...tempAdditionalData };
+
     /*let tableArray = [];
     for (let i = 0; i < data.pages.length; i++) {
       const tempArray = this.readMainTable(data.pages[i].content, tableArray);
-      const tempAdditionalData = this.readSummaryTable(data.pages[i].content);
-      retVal = { ...retVal, ...tempAdditionalData };
+      
       tableArray = [...tableArray, ...tempArray];
     }
     retVal['table'] = tableArray;*/
@@ -64,6 +68,70 @@ export class LovcenPdfService {
       }
     });
     retVal['year'] = retVal['date']?.substring(6, 10);
+
+    return retVal;
+  }
+
+  readSummaryTable(content) {
+    const initialStateText: string = 'Predhodno stanje',
+      owesText: string = 'Dnevni promet (duguje)',
+      demandsText: string = 'Dnevni promet (potražuje)',
+      newStateText: string = 'Novo stanje',
+      debitNumberText: string = 'Broj naloga (zaduženje)',
+      approvalNumberText: string = 'Broj naloga (odobrenje)',
+      totalText: string = 'UKUPNI IZNOS NAKNADA:';
+    let commonY,
+      initialStateX,
+      owesX,
+      demandsX,
+      newStateX,
+      debitNumberX,
+      approvalNumberX,
+      totalX;
+    const margin = 30;
+    const retVal = {};
+
+    content.forEach((element) => {
+      const value = element.str.trim();
+      if (value === totalText) {
+        totalX = element.x;
+        commonY = element.y;
+      }
+      value === initialStateText && (initialStateX = element.x);
+      value === owesText && (owesX = element.x);
+      value === demandsText && (demandsX = element.x);
+      value === newStateText && (newStateX = element.x);
+      value === debitNumberText && (debitNumberX = element.x);
+      value === approvalNumberText && (approvalNumberX = element.x);
+    });
+
+    content.forEach((element) => {
+      const value = element.str.trim();
+      if (value && element.y > commonY && element.y < commonY + 15) {
+        const x = element.x;
+        if (x >= totalX && x < initialStateX) {
+          retVal['totalFees'] = value.replaceAll('.', '').replace(',', '.');
+        }
+        if (x >= initialStateX && x < owesX) {
+          retVal['initialState'] = value.replaceAll('.', '').replace(',', '.');
+        }
+        if (x >= owesX - margin && x < demandsX) {
+          retVal['owes'] = value.replaceAll('.', '').replace(',', '.');
+        }
+        if (x >= demandsX - margin && x < newStateX) {
+          retVal['demands'] = value.replaceAll('.', '').replace(',', '.');
+        }
+        if (x >= newStateX - margin && x < debitNumberX) {
+          retVal['newState'] = value.replaceAll('.', '').replace(',', '.');
+        }
+        if (x >= debitNumberX && x < approvalNumberX) {
+          retVal['debitAuthNumber'] = value;
+        }
+        if (x >= approvalNumberX) {
+          retVal['approvalAuthNumber'] = value;
+        }
+      }
+    });
 
     return retVal;
   }
