@@ -31,8 +31,8 @@ export class PdfParseService {
         !retVal['bank'] && (retVal = this.addikoPdfService.parsePdf(data));
         !retVal['bank'] && (retVal = this.lovcenPdfService.parsePdf(data));
         !retVal['bank'] && (retVal = this.zapadPdfService.parsePdf(data));
-        /*!retVal['bank'] && (retVal = this.adriaticPdfService.parsePdf(data));
-        !retVal['bank'] && (retVal = this.universalPdfService.parsePdf(data));        
+        !retVal['bank'] && (retVal = this.adriaticPdfService.parsePdf(data));
+        /*!retVal['bank'] && (retVal = this.universalPdfService.parsePdf(data));        
         !retVal['bank'] && (retVal = this.ziraatPdfService.parsePdf(data));*/
       })
       .catch((err) => console.log(err));
