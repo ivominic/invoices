@@ -185,13 +185,21 @@ export class UniversalPdfService {
           }
           if (x > col3X && x < col4X) {
             if (el.y < y + margin && el.y > y - margin) {
-              tempVal['owes'] = value.replace(',', '');
+              if (value === '0,00') {
+                tempVal['owes'] = '0.00';
+              } else {
+                tempVal['owes'] = value.replace(',', '');
+              }
             } else {
               tempVal['owesAdditionalFee'] = value.replace(',', '');
             }
           }
           if (x > col4X && x < col5X) {
-            tempVal['demands'] = value.replace('.', '').replace(',', '.');
+            if (value === '0,00') {
+              tempVal['demands'] = '0.00';
+            } else {
+              tempVal['demands'] = value.replace(',', '');
+            }
           }
           if (x > col5X && x < col6X) {
             tempVal['code'] = value;

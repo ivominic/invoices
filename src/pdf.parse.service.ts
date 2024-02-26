@@ -7,6 +7,7 @@ import { ZapadPdfService } from './banks/zapad.services';
 import { ZiraatPdfService } from './banks/ziraat.services';
 import { AdriaticPdfService } from './banks/adriatic.services';
 import { UniversalPdfService } from './banks/universal.services';
+import { NlbPdfService } from './banks/nlb.services';
 
 @Injectable()
 export class PdfParseService {
@@ -18,6 +19,7 @@ export class PdfParseService {
     private readonly universalPdfService: UniversalPdfService,
     private readonly zapadPdfService: ZapadPdfService,
     private readonly ziraatPdfService: ZiraatPdfService,
+    private readonly nlbPdfService: NlbPdfService,
   ) {}
 
   async parsePdf(file) {
@@ -34,6 +36,7 @@ export class PdfParseService {
         !retVal['bank'] && (retVal = this.adriaticPdfService.parsePdf(data));
         !retVal['bank'] && (retVal = this.universalPdfService.parsePdf(data));
         !retVal['bank'] && (retVal = this.ziraatPdfService.parsePdf(data));
+        !retVal['bank'] && (retVal = this.nlbPdfService.parsePdf(data));
       })
       .catch((err) => console.log(err));
     return retVal;

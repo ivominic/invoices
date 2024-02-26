@@ -13,6 +13,7 @@ import { AdriaticPdfService } from './banks/adriatic.services';
 import { UniversalPdfService } from './banks/universal.services';
 import { ZapadPdfService } from './banks/zapad.services';
 import { ZiraatPdfService } from './banks/ziraat.services';
+import { NlbPdfService } from './banks/nlb.services';
 
 @Module({
   imports: [MulterModule.register({ dest: './files' })],
@@ -26,6 +27,7 @@ import { ZiraatPdfService } from './banks/ziraat.services';
     AddikoPdfService,
     AdriaticPdfService,
     LovcenPdfService,
+    NlbPdfService,
     PrvaPdfService,
     UniversalPdfService,
     ZapadPdfService,
