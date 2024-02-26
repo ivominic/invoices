@@ -133,6 +133,8 @@ export class AddikoPdfService {
 
     //When page break goes through a row. We need to append to the last item of previous page
     if (existingArray.length) {
+      let borderY = 150;
+      yArray.length && (borderY = yArray[0]);
       content.forEach((element) => {
         const value = element.str.trim();
         if (
@@ -145,8 +147,8 @@ export class AddikoPdfService {
             'Poziv na broj',
             'zaduženja/odobrenja',
           ].includes(value)
-        )
-          if (element.y < yArray[0] && element.x === 61) {
+        ) {
+          if (element.y < borderY && element.x === 61) {
             const rgx = /^[0-9,\-]*$/;
             if (rgx.test(value)) {
               existingArray[existingArray.length - 1]['partnerAccount'] = value;
@@ -169,6 +171,7 @@ export class AddikoPdfService {
               existingArray[existingArray.length - 1]['modelApprove'] = value;
             }
           }
+        }
       });
     }
 
