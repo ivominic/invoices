@@ -40,4 +40,28 @@ export class ExcerptService {
       return await this.pdfParseService.parsePdf(file);
     }
   }
+
+  async parseExcerptFile(file: string, fileName: string) {
+    // Use fs.readFile() method to read the file
+    if (
+      fileName.toLowerCase().endsWith('html') ||
+      fileName.toLowerCase().endsWith('htm')
+    ) {
+      const data = fs.readFileSync('./files/' + file, {
+        encoding: 'latin1',
+        flag: 'r',
+      });
+      return this.htmlParseService.parseHtml(data);
+    }
+    if (fileName.toLowerCase().endsWith('xml')) {
+      const data = fs.readFileSync('./files/' + file, {
+        encoding: 'latin1',
+        flag: 'r',
+      });
+      return this.xmlParseService.parseXml(data);
+    }
+    if (fileName.toLowerCase().endsWith('pdf')) {
+      return await this.pdfParseService.parsePdf(file);
+    }
+  }
 }
