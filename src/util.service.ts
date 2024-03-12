@@ -33,6 +33,7 @@ export class UtilService {
   }
 
   formatDomesticAccount(value: string): string {
+    if (!value) return value;
     if (!value.includes('-')) return value;
 
     const arr = value.split('-');
