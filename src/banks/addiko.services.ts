@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { UtilService } from 'src/util.service';
 
 @Injectable()
 export class AddikoPdfService {
+  constructor(private readonly utilService: UtilService) {}
+
   parsePdf(data) {
     let retVal = {};
     const bankName = this.checkBank(data.pages[0].content);
@@ -149,21 +152,14 @@ export class AddikoPdfService {
           ].includes(value)
         ) {
           if (element.y < borderY && element.x === 61) {
-            const rgx = /^[0-9,\-]*$/;
-            if (rgx.test(value)) {
+            if (this.utilService.isDomesticAccount(value)) {
               existingArray[existingArray.length - 1]['partnerAccount'] = value;
             } else {
               existingArray[existingArray.length - 1]['receiver'] +=
                 ' ' + value;
             }
             if (element.x >= 144 && element.x < 200) {
-              const dateArray = value.split('.');
-              if (
-                dateArray.length === 3 &&
-                dateArray[0].length === 4 &&
-                dateArray[1].length === 2 &&
-                dateArray[2].length === 2
-              ) {
+              if (this.utilService.isValidReverseDate(value)) {
                 existingArray[existingArray.length - 1]['dateOrigin'] = value;
               }
             }
@@ -200,8 +196,7 @@ export class AddikoPdfService {
               tempVal['receiver'] = value.substring(value.indexOf('. ') + 2);
             }
           } else if (x === 61) {
-            const rgx = /^[0-9,\-]*$/;
-            if (rgx.test(value)) {
+            if (this.utilService.isDomesticAccount(value)) {
               tempVal['partnerAccount'] = value;
             } else {
               if (tempVal['receiver']) {
@@ -212,13 +207,7 @@ export class AddikoPdfService {
             }
           }
           if (x >= 144 && x < 200) {
-            const dateArray = value.split('.');
-            if (
-              dateArray.length === 3 &&
-              dateArray[0].length === 2 &&
-              dateArray[1].length === 2 &&
-              dateArray[2].length === 4
-            ) {
+            if (this.utilService.isValidDate(value)) {
               tempVal['dateOrigin'] = value;
             } else {
               if (tempVal['origin']) {

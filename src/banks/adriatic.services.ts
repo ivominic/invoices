@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { UtilService } from 'src/util.service';
 
 @Injectable()
 export class AdriaticPdfService {
+  constructor(private readonly utilService: UtilService) {}
+
   parsePdf(data) {
     let retVal = {};
     const bankName = this.checkBank(data.pages[0].content);
@@ -118,13 +121,7 @@ export class AdriaticPdfService {
     content.forEach((el) => {
       const value = el.str.trim();
       if (value && el.x < col1X + 1) {
-        const dateArray = value.split('.');
-        if (
-          dateArray.length === 3 &&
-          dateArray[0].length === 2 &&
-          dateArray[1].length === 2 &&
-          dateArray[2].length === 4
-        ) {
+        if (this.utilService.isValidDate(value)) {
           yArray.push(el.y);
         }
       }

@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { UtilService } from 'src/util.service';
 
 @Injectable()
 export class UniversalPdfService {
+  constructor(private readonly utilService: UtilService) {}
+
   parsePdf(data) {
     let retVal = {};
     const bankName = this.checkBank(data.pages[0].content);
@@ -155,8 +158,7 @@ export class UniversalPdfService {
             tempVal['sequence'] = value;
           }
           if (x > col1X && x < col2X) {
-            const rgx = /^[0-9,\-]*$/;
-            if (rgx.test(value)) {
+            if (this.utilService.isDomesticAccount(value)) {
               tempVal['partnerAccount'] = value;
             } else {
               if (tempVal['partner']) {
@@ -167,13 +169,7 @@ export class UniversalPdfService {
             }
           }
           if (x > col2X && x < col3X) {
-            const dateArray = value.split('.');
-            if (
-              dateArray.length === 3 &&
-              dateArray[0].length === 4 &&
-              dateArray[1].length === 2 &&
-              dateArray[2].length === 2
-            ) {
+            if (this.utilService.isValidReverseDate(value)) {
               tempVal['processingDate'] = value;
             } else {
               if (tempVal['origin']) {

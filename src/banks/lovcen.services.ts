@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { UtilService } from 'src/util.service';
 
 @Injectable()
 export class LovcenPdfService {
+  constructor(private readonly utilService: UtilService) {}
+
   parsePdf(data) {
     let retVal = {};
     const bankName = this.checkBank(data.pages[0].content);
@@ -137,18 +140,18 @@ export class LovcenPdfService {
 
   readMainTable(content) {
     const col1Text: string = '1',
-      col2Text: string = '2',
+      //col2Text: string = '2',
       col3Text: string = '3',
-      col4Text: string = '4',
+      //col4Text: string = '4',
       col5Text: string = '5',
       col6Text: string = '6',
       col7Text: string = '7',
       col8Text: string = '8',
       commonY = this.getTitleRowY(content);
     let col1X = 50,
-      col2X,
+      //col2X,
       col3X,
-      col4X,
+      //col4X,
       col5X,
       col6X,
       col7X,
@@ -161,22 +164,16 @@ export class LovcenPdfService {
       const value = element.str.trim();
       if (value && element.y < commonY + 3 && element.y > commonY - 3) {
         value === col1Text && (col1X = element.x);
-        value === col2Text && (col2X = element.x);
+        //value === col2Text && (col2X = element.x);
         value === col3Text && (col3X = element.x);
-        value === col4Text && (col4X = element.x);
+        //value === col4Text && (col4X = element.x);
         value === col5Text && (col5X = element.x);
         value === col6Text && (col6X = element.x);
         value === col7Text && (col7X = element.x);
         value === col8Text && (col8X = element.x);
       }
       if (value && element.y > commonY && element.x <= col1X) {
-        const dateArray = value.split('.');
-        if (
-          dateArray.length === 3 &&
-          dateArray[0].length === 2 &&
-          dateArray[1].length === 2 &&
-          dateArray[2].length === 4
-        ) {
+        if (this.utilService.isValidDate(value)) {
           yArray.push(element.y);
         }
       }
@@ -196,8 +193,7 @@ export class LovcenPdfService {
             tempVal['col1'] = value;
           }
           if (x >= col1X - margin && x < col3X) {
-            const rgx = /^[0-9,\-]*$/;
-            if (rgx.test(value)) {
+            if (this.utilService.isDomesticAccount(value)) {
               tempVal['col3'] = value;
             } else {
               tempVal['col2'] = value;

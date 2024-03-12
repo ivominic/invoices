@@ -14,6 +14,7 @@ import { UniversalPdfService } from './banks/universal.services';
 import { ZapadPdfService } from './banks/zapad.services';
 import { ZiraatPdfService } from './banks/ziraat.services';
 import { NlbPdfService } from './banks/nlb.services';
+import { UtilService } from './util.service';
 
 @Module({
   imports: [MulterModule.register({ dest: './files' })],
@@ -24,6 +25,7 @@ import { NlbPdfService } from './banks/nlb.services';
     HtmlParseService,
     XmlParseService,
     PdfParseService,
+    UtilService,
     AddikoPdfService,
     AdriaticPdfService,
     LovcenPdfService,

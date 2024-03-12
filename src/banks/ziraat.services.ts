@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
+import { UtilService } from 'src/util.service';
 
 let isDone = false;
 @Injectable()
 export class ZiraatPdfService {
+  constructor(private readonly utilService: UtilService) {}
+
   parsePdf(data) {
     isDone = false;
     let retVal = {};
@@ -169,8 +172,7 @@ export class ZiraatPdfService {
             tempVal['sequence'] = value;
           }
           if (x > col1X && x < col2X) {
-            const rgx = /^[0-9,\-]*$/;
-            if (rgx.test(value)) {
+            if (this.utilService.isDomesticAccount(value)) {
               tempVal['partnerAccount'] = value;
             } else {
               if (tempVal['partner']) {
@@ -181,13 +183,7 @@ export class ZiraatPdfService {
             }
           }
           if (x > col2X && x < col3X) {
-            const dateArray = value.split('.');
-            if (
-              dateArray.length === 3 &&
-              dateArray[0].length === 2 &&
-              dateArray[1].length === 2 &&
-              dateArray[2].length === 4
-            ) {
+            if (this.utilService.isValidDate(value)) {
               tempVal['processingDate'] = value;
             } else {
               if (tempVal['origin']) {

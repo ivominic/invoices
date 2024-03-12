@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { UtilService } from 'src/util.service';
 
 @Injectable()
 export class ZapadPdfService {
+  constructor(private readonly utilService: UtilService) {}
+
   parsePdf(data) {
     let retVal = {};
     const bankName = this.checkBank(data.pages[0].content);
@@ -175,8 +178,7 @@ export class ZapadPdfService {
           }
           if (x >= col4X && x < col5X - margin && el.y < nextY - 5) {
             if (!tempVal['accountNumber']) {
-              const rgx = /^[0-9,\-]*$/;
-              if (rgx.test(value)) {
+              if (this.utilService.isDomesticAccount(value)) {
                 tempVal['accountNumber'] = value;
               }
             } else {

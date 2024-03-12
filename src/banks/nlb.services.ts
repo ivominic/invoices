@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { UtilService } from 'src/util.service';
 
 @Injectable()
 export class NlbPdfService {
+  constructor(private readonly utilService: UtilService) {}
+
   parsePdf(data) {
     let retVal = {};
     const bankName = this.checkBank(data.pages[0].content);
@@ -79,8 +82,7 @@ export class NlbPdfService {
           retVal['number'] = tempArray[tempArray.length - 1];
         }
         if (y > accountY - 1 && y < accountY + 1) {
-          const rgx = /^[0-9,\-]*$/;
-          if (rgx.test(value)) {
+          if (this.utilService.isDomesticAccount(value)) {
             retVal['accountNumber'] = value;
           }
         }
@@ -165,8 +167,7 @@ export class NlbPdfService {
 
         if (el.y < borderY && el.y > 35) {
           if (el.x > col1X && el.x < col2X) {
-            const rgx = /^[0-9,\-]*$/;
-            if (rgx.test(value)) {
+            if (this.utilService.isDomesticAccount(value)) {
               if (existingArray[existingArray.length - 1]['partnerAccount']) {
                 existingArray[existingArray.length - 1]['partnerAccount'] +=
                   value;
@@ -239,8 +240,10 @@ export class NlbPdfService {
             tempVal['reference'] = value;
           }
           if (x > col1X && x < col2X) {
-            const rgx = /^[0-9,\-]*$/;
-            if (rgx.test(value) && !value.includes(',')) {
+            if (
+              this.utilService.isDomesticAccount(value) &&
+              !value.includes(',')
+            ) {
               if (tempVal['partnerAccount']) {
                 tempVal['partnerAccount'] += value;
               } else {
