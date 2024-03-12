@@ -85,7 +85,10 @@ export class PrvaPdfService {
           value !== nameText && (retVal['name'] = value);
         }
         if (y === accountXY['y'] && x < accountXY['x'] + 100) {
-          value !== accountText && (retVal['accountNumber'] = value);
+          if (value !== accountText) {
+            retVal['accountNumber'] =
+              this.utilService.formatDomesticAccount(value);
+          }
         }
         if (y === numberXY['y'] && x < numberXY['x'] + 150) {
           value !== numberText && (retVal['number'] = value);
@@ -260,7 +263,8 @@ export class PrvaPdfService {
           }
           if (x >= receiverX - margin && x < originX) {
             if (this.utilService.isDomesticAccount(value)) {
-              tempVal['partnerAccountNumber'] = value;
+              tempVal['partnerAccountNumber'] =
+                this.utilService.formatDomesticAccount(value);
             } else {
               if (tempVal['partnerName']) {
                 tempVal['partnerName'] = tempVal['partnerName'] + ' ' + value;

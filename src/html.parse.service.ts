@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
 //import { parse } from 'node-html-parser';
 import * as cheerio from 'cheerio';
+import { UtilService } from './util.service';
 
 @Injectable()
 export class HtmlParseService {
+  constructor(private readonly utilService: UtilService) {}
+
   async parseHtml(data: string) {
     let retVal: string = '';
     retVal === '' && (retVal = this.parseErsteBank(data));
@@ -27,7 +30,8 @@ export class HtmlParseService {
 
     const thirdTable = $('table').next('table').next('table');
     const accountNumber = thirdTable.find('tr').find('td').next('td').html();
-    dataJson['accountNumber'] = accountNumber;
+    dataJson['accountNumber'] =
+      this.utilService.formatDomesticAccount(accountNumber);
     const numberAndYear = thirdTable
       .find('tr')
       .next('tr')
@@ -111,7 +115,9 @@ export class HtmlParseService {
     tempCell = tempCell.next('td');
     const rawInitiator = this.extractArrayOfCellValues(tempCell.html());
     tempItem['partnerName'] = rawInitiator[0];
-    tempItem['partnerAccountNumber'] = rawInitiator[1];
+    tempItem['partnerAccountNumber'] = this.utilService.formatDomesticAccount(
+      rawInitiator[1],
+    );
     tempItem['rate'] = rawInitiator[2];
 
     tempCell = tempCell.next('td');

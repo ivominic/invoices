@@ -63,7 +63,8 @@ export class ZiraatPdfService {
           retVal['name'] = value;
         }
         if (x > 81 && x < 82 && y > 141 && y < 142) {
-          retVal['accountNumber'] = value;
+          retVal['accountNumber'] =
+            this.utilService.formatDomesticAccount(value);
         }
         if (value.startsWith(numberText) && y < 51) {
           const tempArray = value.split(' ');
@@ -173,7 +174,8 @@ export class ZiraatPdfService {
           }
           if (x > col1X && x < col2X) {
             if (this.utilService.isDomesticAccount(value)) {
-              tempVal['partnerAccountNumber'] = value;
+              tempVal['partnerAccountNumber'] =
+                this.utilService.formatDomesticAccount(value);
             } else {
               if (tempVal['partnerName']) {
                 tempVal['partnerName'] += value;

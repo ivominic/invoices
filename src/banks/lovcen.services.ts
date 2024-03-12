@@ -54,7 +54,8 @@ export class LovcenPdfService {
           retVal['name'] = value;
         }
         if (x === 474 && y > 103 && y < 104) {
-          retVal['accountNumber'] = value;
+          retVal['accountNumber'] =
+            this.utilService.formatDomesticAccount(value);
         }
         if (
           element.str.startsWith(titleStart) &&
@@ -194,7 +195,8 @@ export class LovcenPdfService {
           }
           if (x >= col1X - margin && x < col3X) {
             if (this.utilService.isDomesticAccount(value)) {
-              tempVal['partnerAccountNumber'] = value;
+              tempVal['partnerAccountNumber'] =
+                this.utilService.formatDomesticAccount(value);
             } else {
               tempVal['partnerName'] = value;
             }

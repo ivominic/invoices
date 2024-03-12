@@ -59,7 +59,8 @@ export class ZapadPdfService {
           }
         }
         if (x > 307 && x < 308 && y > 144 && y < 145) {
-          retVal['accountNumber'] = value;
+          retVal['accountNumber'] =
+            this.utilService.formatDomesticAccount(value);
         }
         if (el.str.startsWith(titleStart) && el.y < 100 && el.x < 28) {
           const numberArray = el.str.trim().split(' ');
@@ -179,7 +180,8 @@ export class ZapadPdfService {
           if (x >= col4X && x < col5X - margin && el.y < nextY - 5) {
             if (!tempVal['partnerAccountNumber']) {
               if (this.utilService.isDomesticAccount(value)) {
-                tempVal['partnerAccountNumber'] = value;
+                tempVal['partnerAccountNumber'] =
+                  this.utilService.formatDomesticAccount(value);
               }
             } else {
               if (!tempVal['debitNumber']) {

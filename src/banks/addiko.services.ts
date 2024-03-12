@@ -65,7 +65,9 @@ export class AddikoPdfService {
       ) {
         const numberArray = element.str.trim().split(' ');
         retVal['number'] = numberArray[2];
-        retVal['accountNumber'] = numberArray[5];
+        retVal['accountNumber'] = this.utilService.formatDomesticAccount(
+          numberArray[5],
+        );
       }
       if (
         element.str.startsWith(secondLineStart) &&
@@ -85,27 +87,9 @@ export class AddikoPdfService {
 
   readMainTable(content, existingArray) {
     const sequenceText: string = 'Broj',
-      additionalSequenceText: string = 'Nal',
-      receiverText: string = 'Naziv i sjedište',
-      originText: string = 'Porijeklo naloga',
-      debtText: string = 'Duguje',
-      feeText: string = 'Potražuje',
-      codeText: string = 'Osnov',
-      purposeText: string = 'Svrha',
-      modelText: string = 'Poziv na broj',
-      complaintText: string = 'Obračunata naknada',
-      workerText: string = 'Radnik';
-    let commonY = 250,
-      sequenceX = 49,
-      receiverX,
-      originX,
-      debtX,
-      feeX,
-      codeX,
-      purposeX,
-      modelX,
-      complaintX,
-      workerX;
+      additionalSequenceText: string = 'Nal';
+    let commonY = 250;
+    const sequenceX = 49;
     const margin = 5;
     const tempArray = [],
       yArray = [];
@@ -117,15 +101,6 @@ export class AddikoPdfService {
         //sequenceX = element.x;
         commonY = element.y;
       }
-      value === receiverText && (receiverX = element.x);
-      value === originText && (originX = element.x);
-      value === debtText && (debtX = element.x);
-      value === feeText && (feeX = element.x);
-      value === codeText && (codeX = element.x);
-      value === purposeText && (purposeX = element.x);
-      value === modelText && (modelX = element.x);
-      value === complaintText && (complaintX = element.x);
-      value === workerText && (workerX = element.x);
 
       if (value && element.y > commonY && element.x <= sequenceX) {
         if (value !== sequenceText && value !== additionalSequenceText) {
@@ -154,7 +129,7 @@ export class AddikoPdfService {
           if (element.y < borderY && element.x === 61) {
             if (this.utilService.isDomesticAccount(value)) {
               existingArray[existingArray.length - 1]['partnerAccountNumber'] =
-                value;
+                this.utilService.formatDomesticAccount(value);
             } else {
               existingArray[existingArray.length - 1]['partnerName'] +=
                 ' ' + value;
@@ -198,7 +173,8 @@ export class AddikoPdfService {
             }
           } else if (x === 61) {
             if (this.utilService.isDomesticAccount(value)) {
-              tempVal['partnerAccountNumber'] = value;
+              tempVal['partnerAccountNumber'] =
+                this.utilService.formatDomesticAccount(value);
             } else {
               if (tempVal['partnerName']) {
                 tempVal['partnerName'] += ' ' + value;

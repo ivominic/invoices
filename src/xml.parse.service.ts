@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
 //const parse = require('xml-parser');
 import * as parse from 'xml-parser';
+import { UtilService } from './util.service';
 
 @Injectable()
 export class XmlParseService {
+  constructor(private readonly utilService: UtilService) {}
+
   async parseXml(data: string) {
     let retVal: string = '';
     retVal === '' && (retVal = this.parseCKB(data));
@@ -30,7 +33,12 @@ export class XmlParseService {
     }
 
     obj.root.children.forEach((element) => {
-      element.name === 'acctid' && (retVal['accountNumber'] = element.content);
+      if (element.name === 'acctid') {
+        retVal['accountNumber'] = this.utilService.formatDomesticAccount(
+          element.content,
+        );
+      }
+
       element.name === 'stmtnumber' && (retVal['number'] = element.content);
       if (element.name === 'availbal') {
         element.children.forEach((item) => {
@@ -89,7 +97,8 @@ export class XmlParseService {
         if (element.name === 'payeeaccountinfo') {
           element.children.forEach((record) => {
             if (record.name === 'acctid') {
-              tempItem['partnerAccountNumber'] = record.content;
+              tempItem['partnerAccountNumber'] =
+                this.utilService.formatDomesticAccount(record.content);
             }
             if (record.name === 'bankid') {
               tempItem['payeeAccountInfoBankId'] = record.content;
@@ -185,7 +194,12 @@ export class XmlParseService {
     }
 
     obj.root.children[0].children.forEach((element) => {
-      element.name === 'acctid' && (retVal['accountNumber'] = element.content);
+      if (element.name === 'acctid') {
+        retVal['accountNumber'] = this.utilService.formatDomesticAccount(
+          element.content,
+        );
+      }
+
       element.name === 'stmtnumber' && (retVal['number'] = element.content);
       if (element.name === 'availbal') {
         element.children.forEach((item) => {

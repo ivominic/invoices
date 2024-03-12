@@ -55,7 +55,8 @@ export class UniversalPdfService {
           retVal['name'] = value;
         }
         if (x > 178 && x < 179 && y > accountY - 1 && y < accountY + 1) {
-          retVal['accountNumber'] = value;
+          retVal['accountNumber'] =
+            this.utilService.formatDomesticAccount(value);
         }
         if (x > 559 && x < 560 && y > 151 && y < 152) {
           retVal['number'] = value;
@@ -159,7 +160,8 @@ export class UniversalPdfService {
           }
           if (x > col1X && x < col2X) {
             if (this.utilService.isDomesticAccount(value)) {
-              tempVal['partnerAccountNumber'] = value;
+              tempVal['partnerAccountNumber'] =
+                this.utilService.formatDomesticAccount(value);
             } else {
               if (tempVal['partnerName']) {
                 tempVal['partnerName'] += ' ' + value;

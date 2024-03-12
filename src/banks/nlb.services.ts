@@ -83,7 +83,8 @@ export class NlbPdfService {
         }
         if (y > accountY - 1 && y < accountY + 1) {
           if (this.utilService.isDomesticAccount(value)) {
-            retVal['accountNumber'] = value;
+            retVal['accountNumber'] =
+              this.utilService.formatDomesticAccount(value);
           }
         }
         if (value.startsWith(dateText) && y > 275 && y < 280) {
@@ -179,6 +180,12 @@ export class NlbPdfService {
                   'partnerAccountNumber'
                 ] = value;
               }
+              existingArray[existingArray.length - 1]['partnerAccountNumber'] =
+                this.utilService.formatDomesticAccount(
+                  existingArray[existingArray.length - 1][
+                    'partnerAccountNumber'
+                  ],
+                );
             } else {
               if (existingArray[existingArray.length - 1]['partnerName']) {
                 existingArray[existingArray.length - 1]['partnerName'] +=
@@ -318,6 +325,9 @@ export class NlbPdfService {
           }
         }
       });
+      tempVal['partnerAccountNumber'] = this.utilService.formatDomesticAccount(
+        tempVal['partnerAccountNumber'],
+      );
       tempArray.push(tempVal);
     }
 

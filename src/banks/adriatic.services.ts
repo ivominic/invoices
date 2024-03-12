@@ -55,7 +55,8 @@ export class AdriaticPdfService {
           }
         }
         if (x > 482 && x < 483 && y > 57 && y < 58) {
-          retVal['accountNumber'] = value;
+          retVal['accountNumber'] =
+            this.utilService.formatDomesticAccount(value);
         }
         if (x > 531 && x < 532 && y > 45 && y < 46) {
           retVal['number'] = value;
@@ -155,7 +156,8 @@ export class AdriaticPdfService {
             if (el.y < y + margin) {
               tempVal['partnerName'] = value;
             } else {
-              tempVal['partnerAccountNumber'] = value;
+              tempVal['partnerAccountNumber'] =
+                this.utilService.formatDomesticAccount(value);
             }
           }
           if (x > col3X && x < col4X + margin) {
