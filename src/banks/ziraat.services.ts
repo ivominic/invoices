@@ -100,10 +100,10 @@ export class ZiraatPdfService {
           retVal['initialState'] = value.replaceAll(',', '');
         }
         if (x > 80 && x < 130) {
-          retVal['owes'] = value.replaceAll(',', '');
+          retVal['totalOwes'] = value.replaceAll(',', '');
         }
         if (x > 130 && x < 200) {
-          retVal['demands'] = value.replaceAll(',', '');
+          retVal['totalDemands'] = value.replaceAll(',', '');
         }
         if (x > 200 && x < 260) {
           retVal['newState'] = value.replaceAll(',', '');
@@ -173,12 +173,12 @@ export class ZiraatPdfService {
           }
           if (x > col1X && x < col2X) {
             if (this.utilService.isDomesticAccount(value)) {
-              tempVal['partnerAccount'] = value;
+              tempVal['partnerAccountNumber'] = value;
             } else {
-              if (tempVal['partner']) {
-                tempVal['partner'] += value;
+              if (tempVal['partnerName']) {
+                tempVal['partnerName'] += value;
               } else {
-                tempVal['partner'] = value;
+                tempVal['partnerName'] = value;
               }
             }
           }
@@ -216,10 +216,10 @@ export class ZiraatPdfService {
           }
           if (x > col7X && x < col8X) {
             if (el.y < y) {
-              if (tempVal['debtNumber']) {
-                tempVal['debtNumber'] += ' ' + value;
+              if (tempVal['debitNumber']) {
+                tempVal['debitNumber'] += ' ' + value;
               } else {
-                tempVal['debtNumber'] = value;
+                tempVal['debitNumber'] = value;
               }
             } else {
               if (tempVal['approvalNumber']) {

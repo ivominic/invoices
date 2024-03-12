@@ -111,10 +111,10 @@ export class ZapadPdfService {
           retVal['newState'] = value.replaceAll('.', '').replace(',', '.');
         }
         if (y >= owesY - 1 && y < owesY + 1 && x > 390 && x < 420) {
-          retVal['owes'] = value.replaceAll('.', '').replace(',', '.');
+          retVal['totalOwes'] = value.replaceAll('.', '').replace(',', '.');
         }
         if (y >= demandsY - 1 && y < demandsY + 1 && x > 390 && x < 420) {
-          retVal['demands'] = value.replaceAll('.', '').replace(',', '.');
+          retVal['totalDemands'] = value.replaceAll('.', '').replace(',', '.');
         }
         if (y >= totalY - 1 && y < totalY + 1 && x > 390 && x < 420) {
           retVal['dailySum'] = value.replaceAll('.', '').replace(',', '.');
@@ -166,24 +166,24 @@ export class ZapadPdfService {
           }
           if (x >= col2X && x < col3X + margin && el.y < nextY - 10) {
             if (tempVal['purpose']) {
-              tempVal['client'] += ' ' + tempVal['purpose'];
+              tempVal['partnerName'] += ' ' + tempVal['purpose'];
               tempVal['purpose'] = value;
             } else {
-              if (tempVal['client']) {
+              if (tempVal['partnerName']) {
                 tempVal['purpose'] = value;
               } else {
-                tempVal['client'] = value;
+                tempVal['partnerName'] = value;
               }
             }
           }
           if (x >= col4X && x < col5X - margin && el.y < nextY - 5) {
-            if (!tempVal['accountNumber']) {
+            if (!tempVal['partnerAccountNumber']) {
               if (this.utilService.isDomesticAccount(value)) {
-                tempVal['accountNumber'] = value;
+                tempVal['partnerAccountNumber'] = value;
               }
             } else {
-              if (!tempVal['debtNumber']) {
-                tempVal['debtNumber'] = value;
+              if (!tempVal['debitNumber']) {
+                tempVal['debitNumber'] = value;
               } else {
                 tempVal['approvalNumber'] = value;
               }

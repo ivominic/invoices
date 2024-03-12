@@ -153,9 +153,10 @@ export class AddikoPdfService {
         ) {
           if (element.y < borderY && element.x === 61) {
             if (this.utilService.isDomesticAccount(value)) {
-              existingArray[existingArray.length - 1]['partnerAccount'] = value;
+              existingArray[existingArray.length - 1]['partnerAccountNumber'] =
+                value;
             } else {
-              existingArray[existingArray.length - 1]['receiver'] +=
+              existingArray[existingArray.length - 1]['partnerName'] +=
                 ' ' + value;
             }
             if (element.x >= 144 && element.x < 200) {
@@ -164,7 +165,7 @@ export class AddikoPdfService {
               }
             }
             if (element.x >= 555 && element.x < 560) {
-              existingArray[existingArray.length - 1]['modelApprove'] = value;
+              existingArray[existingArray.length - 1]['approvalModel'] = value;
             }
           }
         }
@@ -177,8 +178,8 @@ export class AddikoPdfService {
       maxY > 0 && (nextY = maxY);
       i < yArray.length - 1 && (nextY = yArray[i + 1]);
       const tempVal = {};
-      tempVal['modelDebt'] = '';
-      tempVal['modelApprove'] = '';
+      tempVal['debitModel'] = '';
+      tempVal['approvalModel'] = '';
       tempVal['calculatedExpense'] = '';
       tempVal['worker'] = '';
 
@@ -193,16 +194,16 @@ export class AddikoPdfService {
                 0,
                 value.indexOf('. '),
               );
-              tempVal['receiver'] = value.substring(value.indexOf('. ') + 2);
+              tempVal['partnerName'] = value.substring(value.indexOf('. ') + 2);
             }
           } else if (x === 61) {
             if (this.utilService.isDomesticAccount(value)) {
-              tempVal['partnerAccount'] = value;
+              tempVal['partnerAccountNumber'] = value;
             } else {
-              if (tempVal['receiver']) {
-                tempVal['receiver'] += ' ' + value;
+              if (tempVal['partnerName']) {
+                tempVal['partnerName'] += ' ' + value;
               } else {
-                tempVal['receiver'] = value;
+                tempVal['partnerName'] = value;
               }
             }
           }
@@ -235,9 +236,9 @@ export class AddikoPdfService {
           }
           if (x >= 555 && x < 560) {
             if (element.y >= y && element.y < y + 10) {
-              tempVal['modelDebt'] = value;
+              tempVal['debitModel'] = value;
             } else {
-              tempVal['modelApprove'] = value;
+              tempVal['approvalModel'] = value;
             }
           }
           if (x >= 650 && x < 660) {

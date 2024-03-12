@@ -90,10 +90,10 @@ export class UniversalPdfService {
           retVal['initialState'] = value.replaceAll(',', '');
         }
         if (x > 120 && x < 150) {
-          retVal['owes'] = value.replaceAll(',', '');
+          retVal['totalOwes'] = value.replaceAll(',', '');
         }
         if (x > 180 && x < 220) {
-          retVal['demands'] = value.replaceAll(',', '');
+          retVal['totalDemands'] = value.replaceAll(',', '');
         }
         if (x > 240 && x < 280) {
           retVal['newState'] = value.replaceAll(',', '');
@@ -159,12 +159,12 @@ export class UniversalPdfService {
           }
           if (x > col1X && x < col2X) {
             if (this.utilService.isDomesticAccount(value)) {
-              tempVal['partnerAccount'] = value;
+              tempVal['partnerAccountNumber'] = value;
             } else {
-              if (tempVal['partner']) {
-                tempVal['partner'] += ' ' + value;
+              if (tempVal['partnerName']) {
+                tempVal['partnerName'] += ' ' + value;
               } else {
-                tempVal['partner'] = value;
+                tempVal['partnerName'] = value;
               }
             }
           }
@@ -209,10 +209,10 @@ export class UniversalPdfService {
           }
           if (x > col7X && x < col8X) {
             if (el.y < y + margin) {
-              if (tempVal['debtNumber']) {
+              if (tempVal['debitNumber']) {
                 tempVal['debtNumber'] += ' ' + value;
               } else {
-                tempVal['debtNumber'] = value;
+                tempVal['debitNumber'] = value;
               }
             } else {
               if (tempVal['approvalNumber']) {

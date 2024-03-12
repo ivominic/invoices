@@ -118,10 +118,10 @@ export class LovcenPdfService {
           retVal['initialState'] = value.replaceAll('.', '').replace(',', '.');
         }
         if (x >= owesX - margin && x < demandsX) {
-          retVal['owes'] = value.replaceAll('.', '').replace(',', '.');
+          retVal['totalOwes'] = value.replaceAll('.', '').replace(',', '.');
         }
         if (x >= demandsX - margin && x < newStateX) {
-          retVal['demands'] = value.replaceAll('.', '').replace(',', '.');
+          retVal['totalDemands'] = value.replaceAll('.', '').replace(',', '.');
         }
         if (x >= newStateX - margin && x < debitNumberX) {
           retVal['newState'] = value.replaceAll('.', '').replace(',', '.');
@@ -194,29 +194,29 @@ export class LovcenPdfService {
           }
           if (x >= col1X - margin && x < col3X) {
             if (this.utilService.isDomesticAccount(value)) {
-              tempVal['col3'] = value;
+              tempVal['partnerAccountNumber'] = value;
             } else {
-              tempVal['col2'] = value;
+              tempVal['partnerName'] = value;
             }
           }
           if (x >= col3X - margin && x < col5X) {
-            tempVal['col4'] = value.replaceAll('.', '').replace(',', '.');
+            tempVal['owes'] = value.replaceAll('.', '').replace(',', '.');
           }
           if (x >= col5X - margin && x < col5X + 40) {
-            tempVal['col5'] = value.replaceAll('.', '').replace(',', '.');
+            tempVal['demands'] = value.replaceAll('.', '').replace(',', '.');
           }
           if (x >= col5X + 40 && x < col6X - 50) {
             if (element.y >= y - margin && element.y < y + 10) {
               tempVal['col6-1'] = value;
             } else {
-              tempVal['col6-2'] = value;
+              tempVal['purpose'] = value;
             }
           }
           if (x >= col7X - 50 && x < col8X - 50) {
             if (element.y >= y - margin && element.y < y + 10) {
-              tempVal['col7-1'] = value;
+              tempVal['debitNumber'] = value;
             } else {
-              tempVal['col7-2'] = value;
+              tempVal['approvalNumber'] = value;
             }
           }
           if (x >= col8X - 50) {

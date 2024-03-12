@@ -110,14 +110,14 @@ export class HtmlParseService {
 
     tempCell = tempCell.next('td');
     const rawInitiator = this.extractArrayOfCellValues(tempCell.html());
-    tempItem['principal'] = rawInitiator[0];
-    tempItem['accountNumber'] = rawInitiator[1];
+    tempItem['partnerName'] = rawInitiator[0];
+    tempItem['partnerAccountNumber'] = rawInitiator[1];
     tempItem['rate'] = rawInitiator[2];
 
     tempCell = tempCell.next('td');
     const rawPurpose = this.extractArrayOfCellValues(tempCell.html());
     tempItem['sequenceNumber'] = rawPurpose[0];
-    tempItem['transferPurpose'] = rawPurpose[1];
+    tempItem['purpose'] = rawPurpose[1];
     tempItem['paymentCode'] = rawPurpose[2];
 
     tempCell = tempCell.next('td');
@@ -127,9 +127,9 @@ export class HtmlParseService {
     tempItem['referentRelation'] = rawTransaction[2];
 
     tempCell = tempCell.next('td');
-    tempItem['expense'] = this.extractSingleCellNumber(tempCell.html());
+    tempItem['owes'] = this.extractSingleCellNumber(tempCell.html());
     tempCell = tempCell.next('td');
-    tempItem['income'] = this.extractSingleCellNumber(tempCell.html());
+    tempItem['demands'] = this.extractSingleCellNumber(tempCell.html());
 
     return tempItem;
   }

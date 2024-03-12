@@ -117,10 +117,10 @@ export class NlbPdfService {
           retVal['initialState'] = value.replaceAll(',', '');
         }
         if (x > 90 && x < 140) {
-          retVal['owes'] = value.replaceAll(',', '');
+          retVal['totalOwes'] = value.replaceAll(',', '');
         }
         if (x > 160 && x < 190) {
-          retVal['demands'] = value.replaceAll(',', '');
+          retVal['totalDemands'] = value.replaceAll(',', '');
         }
         if (x > 200 && x < 250) {
           retVal['newState'] = value.replaceAll(',', '');
@@ -168,19 +168,23 @@ export class NlbPdfService {
         if (el.y < borderY && el.y > 35) {
           if (el.x > col1X && el.x < col2X) {
             if (this.utilService.isDomesticAccount(value)) {
-              if (existingArray[existingArray.length - 1]['partnerAccount']) {
-                existingArray[existingArray.length - 1]['partnerAccount'] +=
-                  value;
+              if (
+                existingArray[existingArray.length - 1]['partnerAccountNumber']
+              ) {
+                existingArray[existingArray.length - 1][
+                  'partnerAccountNumber'
+                ] += value;
               } else {
-                existingArray[existingArray.length - 1]['partnerAccount'] =
-                  value;
+                existingArray[existingArray.length - 1][
+                  'partnerAccountNumber'
+                ] = value;
               }
             } else {
-              if (existingArray[existingArray.length - 1]['partner']) {
-                existingArray[existingArray.length - 1]['partner'] +=
+              if (existingArray[existingArray.length - 1]['partnerName']) {
+                existingArray[existingArray.length - 1]['partnerName'] +=
                   ' ' + value;
               } else {
-                existingArray[existingArray.length - 1]['partner'] = value;
+                existingArray[existingArray.length - 1]['partnerName'] = value;
               }
             }
           }
@@ -208,10 +212,10 @@ export class NlbPdfService {
             }
           }
           if (el.x > col7X && el.x < col8X) {
-            if (existingArray[existingArray.length - 1]['callNumber']) {
-              existingArray[existingArray.length - 1]['callNumber'] += value;
+            if (existingArray[existingArray.length - 1]['debitNumber']) {
+              existingArray[existingArray.length - 1]['debitNumber'] += value;
             } else {
-              existingArray[existingArray.length - 1]['callNumber'] = value;
+              existingArray[existingArray.length - 1]['debitNumber'] = value;
             }
           }
         }
@@ -244,16 +248,16 @@ export class NlbPdfService {
               this.utilService.isDomesticAccount(value) &&
               !value.includes(',')
             ) {
-              if (tempVal['partnerAccount']) {
-                tempVal['partnerAccount'] += value;
+              if (tempVal['partnerAccountNumber']) {
+                tempVal['partnerAccountNumber'] += value;
               } else {
-                tempVal['partnerAccount'] = value;
+                tempVal['partnerAccountNumber'] = value;
               }
             } else {
-              if (tempVal['partner']) {
-                tempVal['partner'] += ' ' + value;
+              if (tempVal['partnerName']) {
+                tempVal['partnerName'] += ' ' + value;
               } else {
-                tempVal['partner'] = value;
+                tempVal['partnerName'] = value;
               }
             }
           }
@@ -306,10 +310,10 @@ export class NlbPdfService {
             }
           }
           if (x > col7X && x < col8X) {
-            if (tempVal['callNumber']) {
-              tempVal['callNumber'] += value;
+            if (tempVal['debitNumber']) {
+              tempVal['debitNumber'] += value;
             } else {
-              tempVal['callNumber'] = value;
+              tempVal['debitNumber'] = value;
             }
           }
         }

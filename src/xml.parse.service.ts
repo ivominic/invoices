@@ -79,7 +79,7 @@ export class XmlParseService {
         if (element.name === 'payeeinfo') {
           element.children.forEach((record) => {
             if (record.name === 'name') {
-              tempItem['payeeInfoName'] = record.content;
+              tempItem['partnerName'] = record.content;
             }
             if (record.name === 'city') {
               tempItem['payeeInfoCity'] = record.content;
@@ -89,7 +89,7 @@ export class XmlParseService {
         if (element.name === 'payeeaccountinfo') {
           element.children.forEach((record) => {
             if (record.name === 'acctid') {
-              tempItem['payeeAccountInfoId'] = record.content;
+              tempItem['partnerAccountNumber'] = record.content;
             }
             if (record.name === 'bankid') {
               tempItem['payeeAccountInfoBankId'] = record.content;
@@ -136,6 +136,16 @@ export class XmlParseService {
           tempItem['fee'] = element.content;
         }
       });
+      tempItem['debitNumber'] = '';
+      tempItem['approvalNumber'] = '';
+      tempItem['owes'] = 0.0;
+      tempItem['demands'] = 0.0;
+      if (tempItem['benefit'] === 'debit') {
+        tempItem['owes'] = tempItem['trnAmount'];
+      }
+      if (tempItem['benefit'] === 'credit') {
+        tempItem['demands'] = tempItem['trnAmount'];
+      }
 
       tempArray.push(tempItem);
     });

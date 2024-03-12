@@ -152,10 +152,10 @@ export class PrvaPdfService {
           retVal['initialState'] = value.replaceAll('.', '').replace(',', '.');
         }
         if (x >= owesX - margin && x < demandsX) {
-          retVal['owes'] = value.replaceAll('.', '').replace(',', '.');
+          retVal['totalOwes'] = value.replaceAll('.', '').replace(',', '.');
         }
         if (x >= demandsX - margin && x < newStateX) {
-          retVal['demands'] = value.replaceAll('.', '').replace(',', '.');
+          retVal['totalDemands'] = value.replaceAll('.', '').replace(',', '.');
         }
         if (x >= newStateX - margin && x < debitAuthNumberX) {
           retVal['newState'] = value.replaceAll('.', '').replace(',', '.');
@@ -260,12 +260,12 @@ export class PrvaPdfService {
           }
           if (x >= receiverX - margin && x < originX) {
             if (this.utilService.isDomesticAccount(value)) {
-              tempVal['partnerAccount'] = value;
+              tempVal['partnerAccountNumber'] = value;
             } else {
-              if (tempVal['receiver']) {
-                tempVal['receiver'] = tempVal['receiver'] + ' ' + value;
+              if (tempVal['partnerName']) {
+                tempVal['partnerName'] = tempVal['partnerName'] + ' ' + value;
               } else {
-                tempVal['receiver'] = value;
+                tempVal['partnerName'] = value;
               }
             }
           }
@@ -282,13 +282,13 @@ export class PrvaPdfService {
           }
           if (x >= debtX - margin && x < approvalX) {
             if (element.y > y && element.y < y + 10) {
-              tempVal['debt'] = value.replaceAll('.', '').replace(',', '.');
+              tempVal['owes'] = value.replaceAll('.', '').replace(',', '.');
             } else {
               tempVal['fee'] = value;
             }
           }
           if (x >= approvalX && x < codeX) {
-            tempVal['approval'] = value.replaceAll('.', '').replace(',', '.');
+            tempVal['demands'] = value.replaceAll('.', '').replace(',', '.');
           }
           if (x >= codeX && x < purposeX) {
             tempVal['code'] = value;
@@ -302,9 +302,9 @@ export class PrvaPdfService {
           }
           if (x >= modelX - margin && x < complaintX - 50) {
             if (element.y > y && element.y < y + 10) {
-              tempVal['modelDebt'] = value;
+              tempVal['debitNumber'] = value;
             } else {
-              tempVal['modelApprove'] = value;
+              tempVal['approvalNumber'] = value;
             }
           }
           if (x >= complaintX - 50) {

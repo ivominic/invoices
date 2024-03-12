@@ -153,9 +153,9 @@ export class AdriaticPdfService {
           }
           if (x > col2X && x < col3X + margin) {
             if (el.y < y + margin) {
-              tempVal['clientName'] = value;
+              tempVal['partnerName'] = value;
             } else {
-              tempVal['clientAccountNumber'] = value;
+              tempVal['partnerAccountNumber'] = value;
             }
           }
           if (x > col3X && x < col4X + margin) {
