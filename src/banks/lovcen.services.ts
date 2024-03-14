@@ -226,6 +226,8 @@ export class LovcenPdfService {
           }
         }
       });
+      tempVal['debitNumber'] = tempVal['debitNumber']?.substring(3);
+      tempVal['approvalNumber'] = tempVal['approvalNumber']?.substring(3);
       tempArray.push(tempVal);
     }
 
