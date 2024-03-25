@@ -33,9 +33,7 @@ export class AppController {
 
   @Get('parse')
   async parseFile() {
-    return await this.excerptService.parseFile(
-      '510000000009178665_20240226.xml',
-    );
+    return await this.excerptService.parseFile('46.pdf');
   }
 
   @Post('parse')
