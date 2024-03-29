@@ -128,8 +128,8 @@ export class HtmlParseService {
 
     tempCell = tempCell.next('td');
     const rawTransaction = this.extractArrayOfCellValues(tempCell.html());
-    tempItem['debitNumber'] = rawTransaction[0];
-    tempItem['approvalNumber'] = rawTransaction[1];
+    tempItem['debitNumber'] = rawTransaction[0]?.substring(3);
+    tempItem['approvalNumber'] = rawTransaction[1]?.substring(3);
     tempItem['referentRelation'] = rawTransaction[2];
 
     tempCell = tempCell.next('td');
@@ -144,6 +144,7 @@ export class HtmlParseService {
     return content
       .replaceAll('<b>', '')
       .replaceAll('</b>', '')
+      .replaceAll('&nbsp;', '')
       .replaceAll(',', '.')
       .replaceAll('"', '')
       .trim();

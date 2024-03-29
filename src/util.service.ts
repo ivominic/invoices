@@ -37,8 +37,9 @@ export class UtilService {
     if (!value.includes('-')) return value;
 
     const arr = value.split('-');
-    if (arr.length !== 3) return value;
+    if (arr.length > 3) return value;
     if (
+      arr.length === 3 &&
       !(
         this.isNumeric(arr[0]) &&
         this.isNumeric(arr[1]) &&
@@ -47,8 +48,17 @@ export class UtilService {
     ) {
       return value;
     }
+    if (
+      arr.length === 2 &&
+      !(this.isNumeric(arr[0]) && this.isNumeric(arr[1]))
+    ) {
+      return value;
+    }
 
-    const missingZeros = 18 - (arr[0].length + arr[1].length + arr[2].length);
+    let missingZeros = 18 - arr[0].length - arr[1].length;
+    if (arr.length === 3) {
+      missingZeros -= arr[2].length;
+    }
     for (let i = 0; i < missingZeros; i++) {
       arr[0] += '0';
     }
