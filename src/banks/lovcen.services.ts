@@ -12,8 +12,6 @@ export class LovcenPdfService {
       return retVal;
     } else {
       retVal['bank'] = bankName;
-      //etVal['rest'] = data.pages[0].content;
-      //return retVal;
     }
     const clientData = this.readClientData(data.pages[0].content);
     retVal = { ...retVal, ...clientData };

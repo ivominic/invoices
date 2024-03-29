@@ -51,7 +51,7 @@ export class NlbPdfService {
         el.str.trim() === searchAddress &&
         el.x > 42 &&
         el.x < 45 &&
-        el.y > 243 &&
+        el.y > 240 &&
         el.y < 246
       ) {
         isAddressFound = true;
