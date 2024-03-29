@@ -12,6 +12,8 @@ export class LovcenPdfService {
       return retVal;
     } else {
       retVal['bank'] = bankName;
+      //etVal['rest'] = data.pages[0].content;
+      //return retVal;
     }
     const clientData = this.readClientData(data.pages[0].content);
     retVal = { ...retVal, ...clientData };
@@ -42,7 +44,8 @@ export class LovcenPdfService {
   }
 
   readClientData(content) {
-    const titleStart: string = 'IZVOD BR.';
+    const titleStart: string = 'IZVOD BR.',
+      titleMiddle = ' za dan ';
     const retVal = {};
 
     content.forEach((element) => {
@@ -59,6 +62,7 @@ export class LovcenPdfService {
         }
         if (
           element.str.startsWith(titleStart) &&
+          element.str.includes(titleMiddle) &&
           element.y > 143 &&
           element.y < 144 &&
           element.x > 320 &&
@@ -67,6 +71,27 @@ export class LovcenPdfService {
           const numberArray = element.str.trim().split(' ');
           retVal['number'] = numberArray[2];
           retVal['date'] = numberArray[5];
+        }
+        if (
+          !retVal['number'] &&
+          element.str.includes(titleMiddle) &&
+          !element.str.startsWith(titleStart)
+        ) {
+          if (
+            element.y > 143 &&
+            element.y < 144 &&
+            element.x > 380 &&
+            element.x < 425
+          ) {
+            const tempSplit = element.str.trim().split(titleMiddle);
+            if (
+              this.utilService.isNumeric(tempSplit[0].trim()) &&
+              this.utilService.isValidDate(tempSplit[1].trim())
+            ) {
+              retVal['number'] = tempSplit[0].trim();
+              retVal['date'] = tempSplit[1].trim();
+            }
+          }
         }
       }
     });
