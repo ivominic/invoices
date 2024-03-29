@@ -122,9 +122,10 @@ export class HtmlParseService {
 
     tempCell = tempCell.next('td');
     const rawPurpose = this.extractArrayOfCellValues(tempCell.html());
-    tempItem['sequenceNumber'] = rawPurpose[0];
-    tempItem['purpose'] = rawPurpose[1];
-    tempItem['paymentCode'] = rawPurpose[2];
+    const tempSplit = rawPurpose[0].split('-');
+    tempItem['sequenceNumber'] = tempSplit[0].trim(); //rawPurpose[0];
+    tempItem['purpose'] = tempSplit[1].trim(); //rawPurpose[1];
+    tempItem['paymentCode'] = rawPurpose[1];
 
     tempCell = tempCell.next('td');
     const rawTransaction = this.extractArrayOfCellValues(tempCell.html());
