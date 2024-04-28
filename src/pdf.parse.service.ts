@@ -9,6 +9,7 @@ import { AdriaticPdfService } from './banks/adriatic.services';
 import { UniversalPdfService } from './banks/universal.services';
 import { NlbPdfService } from './banks/nlb.services';
 import { CkbPdfService } from './banks/ckb.services';
+import { HipotekarnaPdfService } from './banks/hipotekarna.services';
 
 @Injectable()
 export class PdfParseService {
@@ -16,6 +17,7 @@ export class PdfParseService {
     private readonly addikoPdfService: AddikoPdfService,
     private readonly adriaticPdfService: AdriaticPdfService,
     private readonly ckbPdfService: CkbPdfService,
+    private readonly hipotekarnaPdfService: HipotekarnaPdfService,
     private readonly lovcenPdfService: LovcenPdfService,
     private readonly prvaPdfService: PrvaPdfService,
     private readonly universalPdfService: UniversalPdfService,
@@ -27,7 +29,7 @@ export class PdfParseService {
   async parsePdf(file) {
     let retVal;
     const pdfExtract = new PDFExtract();
-    const options: PDFExtractOptions = {}; /* see below */
+    const options: PDFExtractOptions = {};
     await pdfExtract
       .extract('./files/' + file, options)
       .then((data) => {
@@ -41,6 +43,7 @@ export class PdfParseService {
         !retVal['bank'] && (retVal = this.universalPdfService.parsePdf(data));
         !retVal['bank'] && (retVal = this.zapadPdfService.parsePdf(data));
         !retVal['bank'] && (retVal = this.ziraatPdfService.parsePdf(data));
+        !retVal['bank'] && (retVal = this.hipotekarnaPdfService.parsePdf(data)); //last on purpose, since no way to be sure if theirs' statement.
       })
       .catch((err) => console.log(err));
     return retVal;
