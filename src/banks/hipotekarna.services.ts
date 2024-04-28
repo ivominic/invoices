@@ -43,7 +43,7 @@ export class HipotekarnaPdfService {
     content.forEach((el) => {
       const value = el.str.trim();
       if (value) {
-        if (el.x > 990 && el.y < 61 && el.y > 59) {
+        if (el.x > 990 && el.x < 1400 && el.y < 61 && el.y > 59) {
           retVal['clientName'] = value.trim();
         }
         if (el.x > 990 && el.y < 143 && el.y > 141) {
