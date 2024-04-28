@@ -46,7 +46,7 @@ export class HipotekarnaPdfService {
         if (el.x > 990 && el.x < 1400 && el.y < 61 && el.y > 59) {
           retVal['clientName'] = value.trim();
         }
-        if (el.x > 990 && el.y < 143 && el.y > 141) {
+        if (el.x > 990 && el.x < 1200 && el.y < 143 && el.y > 141) {
           retVal['accountNumber'] = value.trim();
         }
         if (el.x > 720 && el.x < 750 && el.y < 227 && el.y > 225) {
