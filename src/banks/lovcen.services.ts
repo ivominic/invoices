@@ -231,8 +231,8 @@ export class LovcenPdfService {
             tempVal['demands'] = value.replaceAll('.', '').replace(',', '.');
           }
           if (x >= col5X + 40 && x < col6X - 50) {
-            if (element.y >= y - margin && element.y < y + 10) {
-              tempVal['col6-1'] = value;
+            if (tempVal['purpose']) {
+              tempVal['purpose'] += ' ' + value;
             } else {
               tempVal['purpose'] = value;
             }
