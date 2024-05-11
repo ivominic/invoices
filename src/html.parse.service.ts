@@ -47,6 +47,7 @@ export class HtmlParseService {
 
     const forthTable = $('table').next('table').next('table').next('table');
     dataJson['table'] = this.tableParseErsteBank(forthTable, dataJson);
+    console.log(dataJson['table']);
     return JSON.stringify(dataJson);
   }
 
@@ -146,6 +147,7 @@ export class HtmlParseService {
       .replaceAll('<b>', '')
       .replaceAll('</b>', '')
       .replaceAll('&nbsp;', '')
+      .replaceAll('.', '')
       .replaceAll(',', '.')
       .replaceAll('"', '')
       .trim();
@@ -156,6 +158,7 @@ export class HtmlParseService {
       .replaceAll('<b>', '')
       .replaceAll('</b>', '')
       .replaceAll('&nbsp;', '')
+      .replaceAll('.', '')
       .replaceAll(',', '.')
       .replaceAll('"', '')
       .replaceAll(' ', '');
@@ -176,6 +179,9 @@ export class HtmlParseService {
   }
 
   replaceNationalCharacters(content) {
-    return content.replaceAll('è', 'č');
+    return content
+      .replaceAll('è', 'č')
+      .replaceAll('Ä\x8D', 'č')
+      .replaceAll('Æ', 'Ć');
   }
 }
