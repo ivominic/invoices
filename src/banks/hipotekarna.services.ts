@@ -18,8 +18,8 @@ export class HipotekarnaPdfService {
       clientData['date']?.length === 11 &&
       clientData['year']?.length === 4
     ) {
-      retVal['bank'] = 'HIPOTEKARNA';
       retVal = { ...clientData };
+      retVal['bank'] = 'HIPOTEKARNA';
     } else {
       return retVal;
     }

@@ -47,7 +47,6 @@ export class HtmlParseService {
 
     const forthTable = $('table').next('table').next('table').next('table');
     dataJson['table'] = this.tableParseErsteBank(forthTable, dataJson);
-    console.log(dataJson['table']);
     return JSON.stringify(dataJson);
   }
 

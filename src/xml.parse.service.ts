@@ -163,8 +163,7 @@ export class XmlParseService {
   }
 
   parseHB(data) {
-    console.log('HB');
-    const retVal = { bank: 'HB' };
+    const retVal = { bank: 'HIPOTEKARNA' };
     const obj = parse(data);
 
     if (
