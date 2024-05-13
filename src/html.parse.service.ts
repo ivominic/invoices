@@ -116,7 +116,7 @@ export class HtmlParseService {
     const rawInitiator = this.extractArrayOfCellValues(tempCell.html());
     tempItem['partnerName'] = rawInitiator[0];
     tempItem['partnerAccountNumber'] = this.utilService.formatDomesticAccount(
-      rawInitiator[1],
+      rawInitiator[1].trim(),
     );
     tempItem['rate'] = rawInitiator[2];
 
