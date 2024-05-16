@@ -11,6 +11,9 @@ export class XmlParseService {
     let retVal: string = '';
     retVal === '' && (retVal = this.parseCKB(data));
     retVal === '' && (retVal = this.parseHB(data));
+    if (retVal['number']) {
+      retVal['number'] = parseInt(retVal['number']).toString();
+    }
 
     return retVal;
   }

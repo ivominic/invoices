@@ -10,6 +10,9 @@ export class HtmlParseService {
   async parseHtml(data: string) {
     let retVal: string = '';
     retVal === '' && (retVal = this.parseErsteBank(data));
+    if (retVal['number']) {
+      retVal['number'] = parseInt(retVal['number']).toString();
+    }
 
     return retVal;
   }

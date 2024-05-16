@@ -46,6 +46,9 @@ export class PdfParseService {
         !retVal['bank'] && (retVal = this.hipotekarnaPdfService.parsePdf(data)); //last on purpose, since no way to be sure if theirs' statement.
       })
       .catch((err) => console.log(err));
+    if (retVal['number']) {
+      retVal['number'] = parseInt(retVal['number']).toString();
+    }
     return retVal;
   }
 }

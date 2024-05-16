@@ -299,8 +299,10 @@ export class NlbPdfService {
               tempVal['demands'] = value.replace(',', '');
             }
           }
-          if (x > col5X && x < col6X - 10) {
-            tempVal['code'] = value.substring(0, 4).trim();
+          if (x > col5X - 10 && x < col6X - 10) {
+            if (!tempVal['code']) {
+              tempVal['code'] = value.substring(0, 4).trim();
+            }
             if (tempVal['purpose']) {
               tempVal['purpose'] += ' ' + value.substring(4).trim();
             } else {
