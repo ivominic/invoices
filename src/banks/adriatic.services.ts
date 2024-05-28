@@ -59,7 +59,11 @@ export class AdriaticPdfService {
             this.utilService.formatDomesticAccount(value);
         }
         if (x > 531 && x < 532 && y > 45 && y < 46) {
-          retVal['number'] = value;
+          if (value.length > 3) {
+            retVal['number'] = value.substring(value.length - 3);
+          } else {
+            retVal['number'] = value;
+          }
         }
         if (x > 522 && x < 523 && y > 81 && y < 82) {
           retVal['date'] = value;
