@@ -146,7 +146,7 @@ export class NlbPdfService {
       col4X = 360,
       col5X = 400,
       col6X = 430,
-      col7X = 500,
+      col7X = 490,
       col8X = 570;
     const margin = 5;
     const tempArray = [],
@@ -284,7 +284,7 @@ export class NlbPdfService {
                   tempVal['owesAdditionalFee'] = value.replace(',', '');
                 }
               } else {
-                if (isNaN(value)) {
+                if (isNaN(value.replace(',', ''))) {
                   tempVal['owes'] = '0.00';
                 } else {
                   tempVal['owes'] = value.replace(',', '');
@@ -293,7 +293,7 @@ export class NlbPdfService {
             }
           }
           if (x > col4X && x < col5X && el.y < nextY - subY) {
-            if (isNaN(value)) {
+            if (isNaN(value.replace(',', ''))) {
               tempVal['demands'] = '0.00';
             } else {
               tempVal['demands'] = value.replace(',', '');
