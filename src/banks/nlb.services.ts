@@ -42,7 +42,7 @@ export class NlbPdfService {
         el.str.trim() === searchName &&
         el.x > 42 &&
         el.x < 45 &&
-        el.y > 230 &&
+        el.y > 220 &&
         el.y < 235
       ) {
         isNameFound = true;
@@ -143,8 +143,8 @@ export class NlbPdfService {
       col11X = 60,
       col2X = 200,
       col3X = 280,
-      col4X = 360,
-      col5X = 400,
+      col4X = 340,
+      col5X = 395,
       col6X = 430,
       col7X = 490,
       col8X = 570;
@@ -304,7 +304,7 @@ export class NlbPdfService {
               tempVal['code'] = value.substring(0, 4).trim();
             }
             if (tempVal['purpose']) {
-              tempVal['purpose'] += ' ' + value.substring(4).trim();
+              tempVal['purpose'] += ' ' + value.trim();
             } else {
               tempVal['purpose'] = value.substring(4).trim();
             }

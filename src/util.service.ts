@@ -28,7 +28,7 @@ export class UtilService {
   }
 
   isNumeric(value: string): boolean {
-    const rgx = /^[0-9]*$/;
+    const rgx = /^[0-9]{1,}$/;
     return rgx.test(value);
   }
 
