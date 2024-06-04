@@ -131,9 +131,9 @@ export class ZapadPdfService {
       col2X = 50,
       col3X = 91,
       col4X = 264,
-      col5X = 411,
-      col6X = 482,
-      col7X = 554;
+      col5X = 410,
+      col6X = 460,
+      col7X = 534;
     const margin = 10;
     const tempArray = [],
       yArray = [];
@@ -150,6 +150,8 @@ export class ZapadPdfService {
       let nextY = y + 35;
       i < yArray.length - 1 && (nextY = yArray[i + 1]);
       const tempVal = {};
+      tempVal['owes'] = '0';
+      tempVal['demands'] = '0';
 
       content.forEach((el) => {
         const value = el.str.trim();
@@ -191,10 +193,10 @@ export class ZapadPdfService {
               }
             }
           }
-          if (x >= col5X - margin && x < col6X) {
+          if (x >= col5X && x < col6X) {
             tempVal['owes'] = value.replaceAll('.', '').replace(',', '.');
           }
-          if (x >= col6X - margin && x < col7X - margin) {
+          if (x >= col6X && x < col7X) {
             tempVal['demands'] = value.replaceAll('.', '').replace(',', '.');
           }
           if (x >= col7X - 20) {
