@@ -51,7 +51,7 @@ export class NlbPdfService {
         el.str.trim() === searchAddress &&
         el.x > 42 &&
         el.x < 45 &&
-        el.y > 240 &&
+        el.y > 235 &&
         el.y < 246
       ) {
         isAddressFound = true;
@@ -72,7 +72,7 @@ export class NlbPdfService {
       const value = el.str.trim();
       if (value) {
         const y = el.y;
-        if (value.includes(accountText) && y > 295 && y < 300) {
+        if (value.includes(accountText) && y > 290 && y < 300) {
           accountY = y;
           retVal['name'] = value.replace(accountText, '').trim();
         }
@@ -87,7 +87,7 @@ export class NlbPdfService {
               this.utilService.formatDomesticAccount(value);
           }
         }
-        if (value.startsWith(dateText) && y > 275 && y < 280) {
+        if (value.startsWith(dateText) && y > 270 && y < 280) {
           const tempArray = value.split(' ');
           retVal['date'] = tempArray[tempArray.length - 3];
         }
@@ -143,7 +143,7 @@ export class NlbPdfService {
       col11X = 60,
       col2X = 200,
       col3X = 280,
-      col4X = 340,
+      col4X = 345,
       col5X = 395,
       col6X = 430,
       col7X = 490,
@@ -299,7 +299,7 @@ export class NlbPdfService {
               tempVal['demands'] = value.replace(',', '');
             }
           }
-          if (x > col5X - 10 && x < col6X - 10) {
+          if (x > col5X - 4 && x < col6X - 10) {
             if (!tempVal['code']) {
               tempVal['code'] = value.substring(0, 4).trim();
             }
