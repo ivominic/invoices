@@ -11,6 +11,7 @@ import { LovcenPdfService } from './banks/lovcen.services';
 import { PrvaPdfService } from './banks/prva.services';
 import { AdriaticPdfService } from './banks/adriatic.services';
 import { UniversalPdfService } from './banks/universal.services';
+import { Universal2PdfService } from './banks/universal2.services';
 import { ZapadPdfService } from './banks/zapad.services';
 import { ZiraatPdfService } from './banks/ziraat.services';
 import { NlbPdfService } from './banks/nlb.services';
@@ -36,6 +37,7 @@ import { HipotekarnaPdfService } from './banks/hipotekarna.services';
     NlbPdfService,
     PrvaPdfService,
     UniversalPdfService,
+    Universal2PdfService,
     ZapadPdfService,
     ZiraatPdfService,
   ],
