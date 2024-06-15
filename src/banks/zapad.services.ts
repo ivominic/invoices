@@ -131,7 +131,7 @@ export class ZapadPdfService {
       col2X = 50,
       col3X = 91,
       col4X = 264,
-      col5X = 410,
+      col5X = 380,
       col6X = 460,
       col7X = 534;
     const margin = 10;
