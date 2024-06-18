@@ -294,12 +294,14 @@ export class NlbPdfService {
           }
           if (x > col4X && x < col5X && el.y < nextY - subY) {
             if (isNaN(value.replace(',', ''))) {
-              tempVal['demands'] = '0.00';
+              if (!tempVal['demands']) {
+                tempVal['demands'] = '0.00';
+              }
             } else {
               tempVal['demands'] = value.replace(',', '');
             }
           }
-          if (x > col5X - 4 && x < col6X - 10) {
+          if (x > col5X - 9 && x < col6X - 10) {
             if (!tempVal['code']) {
               tempVal['code'] = value.substring(0, 4).trim();
             }

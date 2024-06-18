@@ -21,8 +21,8 @@ export class HtmlParseService {
     const dataJson = {};
     const $ = cheerio.load(data);
     const firstTable = $('table');
-    const bankName = firstTable.find('tr').next('tr').find('td').html().trim();
-    if (!bankName.toUpperCase().startsWith('ERSTE BANK AD')) {
+    const bankName = firstTable.find('tr').next('tr').find('td').html()?.trim();
+    if (!bankName?.toUpperCase().startsWith('ERSTE BANK AD')) {
       return '';
     }
 
