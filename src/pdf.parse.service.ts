@@ -9,6 +9,7 @@ import { AdriaticPdfService } from './banks/adriatic.services';
 import { UniversalPdfService } from './banks/universal.services';
 import { Universal2PdfService } from './banks/universal2.services';
 import { NlbPdfService } from './banks/nlb.services';
+import { Nlb2PdfService } from './banks/nlb2.services';
 import { CkbPdfService } from './banks/ckb.services';
 import { HipotekarnaPdfService } from './banks/hipotekarna.services';
 
@@ -26,6 +27,7 @@ export class PdfParseService {
     private readonly zapadPdfService: ZapadPdfService,
     private readonly ziraatPdfService: ZiraatPdfService,
     private readonly nlbPdfService: NlbPdfService,
+    private readonly nlb2PdfService: Nlb2PdfService,
   ) {}
 
   async parsePdf(file) {
@@ -42,6 +44,7 @@ export class PdfParseService {
         !retVal['bank'] && (retVal = this.ckbPdfService.parsePdf(data));
         !retVal['bank'] && (retVal = this.lovcenPdfService.parsePdf(data));
         !retVal['bank'] && (retVal = this.nlbPdfService.parsePdf(data));
+        !retVal['bank'] && (retVal = this.nlb2PdfService.parsePdf(data));
         !retVal['bank'] && (retVal = this.universalPdfService.parsePdf(data));
         !retVal['bank'] && (retVal = this.universal2PdfService.parsePdf(data));
         !retVal['bank'] && (retVal = this.zapadPdfService.parsePdf(data));

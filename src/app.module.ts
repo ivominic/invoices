@@ -15,6 +15,7 @@ import { Universal2PdfService } from './banks/universal2.services';
 import { ZapadPdfService } from './banks/zapad.services';
 import { ZiraatPdfService } from './banks/ziraat.services';
 import { NlbPdfService } from './banks/nlb.services';
+import { Nlb2PdfService } from './banks/nlb2.services';
 import { UtilService } from './util.service';
 import { CkbPdfService } from './banks/ckb.services';
 import { HipotekarnaPdfService } from './banks/hipotekarna.services';
@@ -35,6 +36,7 @@ import { HipotekarnaPdfService } from './banks/hipotekarna.services';
     HipotekarnaPdfService,
     LovcenPdfService,
     NlbPdfService,
+    Nlb2PdfService,
     PrvaPdfService,
     UniversalPdfService,
     Universal2PdfService,
