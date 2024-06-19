@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { UtilService } from 'src/util.service';
 
+let col1X = 125;
+
 @Injectable()
 export class NlbPdfService {
   constructor(private readonly utilService: UtilService) {}
@@ -51,7 +53,7 @@ export class NlbPdfService {
         el.str.trim() === searchAddress &&
         el.x > 42 &&
         el.x < 45 &&
-        el.y > 235 &&
+        el.y > 230 &&
         el.y < 246
       ) {
         isAddressFound = true;
@@ -72,12 +74,12 @@ export class NlbPdfService {
       const value = el.str.trim();
       if (value) {
         const y = el.y;
-        if (value.includes(accountText) && y > 290 && y < 300) {
+        if (value.includes(accountText) && y > 270 && y < 300) {
           accountY = y;
           retVal['name'] = value.replace(accountText, '').trim();
         }
 
-        if (value.startsWith(numberText) && y > 260 && y < 270) {
+        if (value.startsWith(numberText) && y > 240 && y < 270) {
           const tempArray = value.split(' ');
           retVal['number'] = tempArray[tempArray.length - 1];
         }
@@ -87,7 +89,7 @@ export class NlbPdfService {
               this.utilService.formatDomesticAccount(value);
           }
         }
-        if (value.startsWith(dateText) && y > 270 && y < 280) {
+        if (value.startsWith(dateText) && y > 250 && y < 280) {
           const tempArray = value.split(' ');
           retVal['date'] = tempArray[tempArray.length - 3];
         }
@@ -139,8 +141,7 @@ export class NlbPdfService {
   }
 
   readMainTable(content, existingArray) {
-    const col1X = 125,
-      col11X = 60,
+    const col11X = 60,
       col2X = 200,
       col3X = 280,
       col4X = 345,
@@ -155,6 +156,9 @@ export class NlbPdfService {
     content.forEach((el) => {
       const value = el.str.trim();
       if (value && el.x < col1X && el.x > 100 && !isNaN(value) && value < 999) {
+        if (yArray.length === 0) {
+          col1X = el.x + el.width + 1;
+        }
         !value.includes('.') && yArray.push(el.y);
       }
     });

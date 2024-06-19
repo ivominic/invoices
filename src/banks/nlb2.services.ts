@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { UtilService } from 'src/util.service';
 
+let col1X = 112;
 @Injectable()
 export class Nlb2PdfService {
   constructor(private readonly utilService: UtilService) {}
@@ -139,8 +140,7 @@ export class Nlb2PdfService {
   }
 
   readMainTable(content, existingArray) {
-    const col1X = 112,
-      col11X = 50,
+    const col11X = 50,
       col2X = 200,
       col3X = 330,
       col4X = 370,
@@ -155,6 +155,9 @@ export class Nlb2PdfService {
     content.forEach((el) => {
       const value = el.str.trim();
       if (value && el.x < col1X && el.x > 100 && !isNaN(value) && value < 999) {
+        if (yArray.length === 0) {
+          col1X = el.x + el.width + 1;
+        }
         !value.includes('.') && yArray.push(el.y);
       }
     });
