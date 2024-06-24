@@ -179,6 +179,15 @@ export class AdriaticPdfService {
           }
         }
       });
+      tempVal['secondSubAccount'] &&
+        (tempVal['purpose'] =
+          tempVal['secondSubAccount'] + ' ' + tempVal['purpose']);
+      tempVal['firstSubAccount'] &&
+        (tempVal['purpose'] =
+          tempVal['firstSubAccount'] + ' ' + tempVal['purpose']);
+      tempVal['partnerName'] &&
+        (tempVal['purpose'] =
+          tempVal['partnerName'] + ' ' + tempVal['purpose']);
       tempArray.push(tempVal);
     }
 

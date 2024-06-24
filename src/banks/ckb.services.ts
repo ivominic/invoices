@@ -257,6 +257,9 @@ export class CkbPdfService {
           }
         }
       });
+      tempVal['partnerName'] &&
+        (tempVal['purpose'] =
+          tempVal['partnerName'] + ' ' + tempVal['purpose']);
       tempArray.push(tempVal);
     }
 
