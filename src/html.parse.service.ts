@@ -141,6 +141,13 @@ export class HtmlParseService {
     tempCell = tempCell.next('td');
     tempItem['demands'] = this.extractSingleCellNumber(tempCell.html());
 
+    tempItem['partnerAccountNumber'] &&
+      (tempItem['purpose'] =
+        tempItem['partnerAccountNumber'] + ' ' + tempItem['purpose']);
+    tempItem['partnerName'] &&
+      (tempItem['purpose'] =
+        tempItem['partnerName'] + ' ' + tempItem['purpose']);
+
     return tempItem;
   }
 

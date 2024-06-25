@@ -333,6 +333,9 @@ export class Nlb2PdfService {
       tempVal['partnerAccountNumber'] = this.utilService.formatDomesticAccount(
         tempVal['partnerAccountNumber'],
       );
+      tempVal['partnerName'] &&
+        (tempVal['purpose'] =
+          tempVal['partnerName'] + ' ' + tempVal['purpose']);
       tempArray.push(tempVal);
     }
 

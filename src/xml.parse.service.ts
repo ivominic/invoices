@@ -158,6 +158,9 @@ export class XmlParseService {
       if (tempItem['benefit'] === 'credit') {
         tempItem['demands'] = tempItem['trnAmount'];
       }
+      tempItem['partnerName'] &&
+        (tempItem['purpose'] =
+          tempItem['partnerName'] + ' ' + tempItem['purpose']);
 
       tempArray.push(tempItem);
     });

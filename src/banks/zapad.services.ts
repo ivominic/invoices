@@ -204,6 +204,9 @@ export class ZapadPdfService {
           }
         }
       });
+      tempVal['partnerName'] &&
+        (tempVal['purpose'] =
+          tempVal['partnerName'] + ' ' + tempVal['purpose']);
       tempVal['debitNumber'] = tempVal['debitNumber']?.substring(3);
       tempVal['approvalNumber'] = tempVal['approvalNumber']?.substring(3);
       tempArray.push(tempVal);

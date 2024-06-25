@@ -129,6 +129,9 @@ export class HipotekarnaPdfService {
 
       tempVal['debitNumber'] = tempVal['debitNumber']?.substring(3);
       tempVal['approvalNumber'] = tempVal['approvalNumber']?.substring(3);
+      tempVal['partnerName'] &&
+        (tempVal['purpose'] =
+          tempVal['partnerName'] + ' ' + tempVal['purpose']);
       tempArray.push(tempVal);
     }
 

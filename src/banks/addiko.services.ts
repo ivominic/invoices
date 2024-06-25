@@ -225,6 +225,9 @@ export class AddikoPdfService {
           }
         }
       });
+      tempVal['partnerName'] &&
+        (tempVal['purpose'] =
+          tempVal['partnerName'] + ' ' + tempVal['purpose']);
       tempArray.push(tempVal);
     }
 
