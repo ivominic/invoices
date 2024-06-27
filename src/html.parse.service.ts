@@ -28,7 +28,9 @@ export class HtmlParseService {
 
     dataJson['bank'] = 'ERSTE';
     const rDate = $('p').next('p').text();
-    const excerptDate = rDate.substring(rDate.length - 12, rDate.length).trim();
+    const excerptDate = rDate
+      .substring(rDate.length - 12, rDate.length - 2)
+      .trim();
     dataJson['date'] = excerptDate;
 
     const thirdTable = $('table').next('table').next('table');
@@ -147,6 +149,8 @@ export class HtmlParseService {
     tempItem['partnerName'] &&
       (tempItem['purpose'] =
         tempItem['partnerName'] + ' ' + tempItem['purpose']);
+    tempItem['paymentCode'] &&
+      (tempItem['purpose'] += ' ' + tempItem['paymentCode']);
 
     return tempItem;
   }
