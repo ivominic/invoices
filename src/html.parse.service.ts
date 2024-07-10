@@ -151,6 +151,11 @@ export class HtmlParseService {
         tempItem['partnerName'] + ' ' + tempItem['purpose']);
     tempItem['paymentCode'] &&
       (tempItem['purpose'] += ' ' + tempItem['paymentCode']);
+    //Replace multiple empty spaces with single one
+    tempItem['purpose'] &&
+      (tempItem['purpose'] = tempItem['purpose'].replace(/\s+/g, ' '));
+    tempItem['partnerName'] &&
+      (tempItem['partnerName'] = tempItem['partnerName'].replace(/\s+/g, ' '));
 
     return tempItem;
   }
