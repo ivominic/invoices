@@ -134,7 +134,7 @@ export class AdriaticPdfService {
 
     for (let i = 0; i < yArray.length; i++) {
       const y = yArray[i];
-      let nextY = y + 25;
+      let nextY = y + 20;
       i < yArray.length - 1 && (nextY = yArray[i + 1]);
       const tempVal = {};
 
