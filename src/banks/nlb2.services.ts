@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { UtilService } from 'src/util.service';
 
-let col1X = 112;
+let col1X = 115;
 @Injectable()
 export class Nlb2PdfService {
   constructor(private readonly utilService: UtilService) {}
@@ -42,7 +42,7 @@ export class Nlb2PdfService {
       if (
         el.str.trim() === searchName &&
         el.x > 40 &&
-        el.x < 42 &&
+        el.x < 43 &&
         el.y > 200 &&
         el.y < 220
       ) {
@@ -51,7 +51,7 @@ export class Nlb2PdfService {
       if (
         el.str.trim().startsWith(searchAddress) &&
         el.x > 40 &&
-        el.x < 42 &&
+        el.x < 43 &&
         el.y > 210 &&
         el.y < 230
       ) {
@@ -73,12 +73,12 @@ export class Nlb2PdfService {
       const value = el.str.trim();
       if (value) {
         const y = el.y;
-        if (value.includes(accountText) && y > 255 && y < 270) {
+        if (value.includes(accountText) && y > 255 && y < 290) {
           accountY = y;
           retVal['name'] = value.replace(accountText, '').trim() + ' - second';
         }
 
-        if (value.startsWith(numberText) && y > 225 && y < 245) {
+        if (value.startsWith(numberText) && y > 225 && y < 255) {
           const tempArray = value.split(' ');
           retVal['number'] = tempArray[tempArray.length - 1];
         }
@@ -88,7 +88,7 @@ export class Nlb2PdfService {
               this.utilService.formatDomesticAccount(value);
           }
         }
-        if (value.startsWith(dateText) && y > 240 && y < 250) {
+        if (value.startsWith(dateText) && y > 240 && y < 265) {
           const tempArray = value.split(' ');
           retVal['date'] = tempArray[tempArray.length - 3];
         }
