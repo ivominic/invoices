@@ -44,7 +44,7 @@ export class NlbPdfService {
         el.str.trim() === searchName &&
         el.x > 42 &&
         el.x < 45 &&
-        el.y > 220 &&
+        el.y > 219 &&
         el.y < 235
       ) {
         isNameFound = true;

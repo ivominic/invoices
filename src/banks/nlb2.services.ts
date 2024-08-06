@@ -142,9 +142,9 @@ export class Nlb2PdfService {
   readMainTable(content, existingArray) {
     const col11X = 50,
       col2X = 200,
-      col3X = 330,
-      col4X = 370,
-      col5X = 415,
+      col3X = 300,
+      col4X = 365,
+      col5X = 393,
       col6X = 440,
       col7X = 490,
       col8X = 570;
