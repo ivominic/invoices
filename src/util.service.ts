@@ -7,6 +7,11 @@ export class UtilService {
     return rgx.test(value);
   }
 
+  isForeignAccount(value: string): boolean {
+    const rgx = /^ME[0-9]{20}$/;
+    return rgx.test(value);
+  }
+
   isValidDate(value: string): boolean {
     const dateArray = value.split('.');
     return (
