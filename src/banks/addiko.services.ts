@@ -194,10 +194,10 @@ export class AddikoPdfService {
               }
             }
           }
-          if (x >= 310 && x < 330) {
+          if (x >= 290 && x < 330) {
             tempVal['owes'] = value.replaceAll(',', '');
           }
-          if (x >= 390 && x < 400) {
+          if (x >= 360 && x < 400) {
             tempVal['demands'] = value.replaceAll(',', '');
           }
           if (x >= 427 && x < 430) {
