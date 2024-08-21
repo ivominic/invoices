@@ -178,9 +178,11 @@ export class ZiraatPdfService {
                 this.utilService.formatDomesticAccount(value);
             } else {
               if (tempVal['partnerName']) {
-                tempVal['partnerName'] += value;
+                tempVal['partnerName'] +=
+                  this.utilService.camelCaseToText(value);
               } else {
-                tempVal['partnerName'] = value;
+                tempVal['partnerName'] =
+                  this.utilService.camelCaseToText(value);
               }
             }
           }
@@ -211,9 +213,10 @@ export class ZiraatPdfService {
           }
           if (x > col6X && x < col7X) {
             if (tempVal['purpose']) {
-              tempVal['purpose'] += ' ' + value;
+              tempVal['purpose'] +=
+                ' ' + this.utilService.camelCaseToText(value);
             } else {
-              tempVal['purpose'] = value;
+              tempVal['purpose'] = this.utilService.camelCaseToText(value);
             }
           }
           if (x > col7X && x < col8X) {
