@@ -70,4 +70,13 @@ export class UtilService {
 
     return arr.join('');
   }
+
+  /**
+   *
+   * @param value Method that takes text in camel case and returns text with spaces. Eg: "SomeTextWithoutTHE" returns "Some Text Without THE"
+   * @returns
+   */
+  camelCaseToText(value) {
+    return value.replace(/([a-z])([A-Z])/g, '$1 $2');
+  }
 }
