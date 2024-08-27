@@ -95,11 +95,10 @@ export class HipotekarnaPdfService {
         if (value && el.y > y - margin && el.y < nextY - margin) {
           const x = el.x;
           if (x > col2X && x <= col3X && el.y > y - 1 && el.y < y + 15) {
-            if (!tempVal['partnerName']) {
-              tempVal['partnerName'] = value;
-            } else {
-              tempVal['partnerName'] += ' ' + value;
-            }
+            tempVal['partnerName'] = this.utilService.setOrAppend(
+              tempVal['partnerName'],
+              value,
+            );
           }
           if (x > col2X && x <= col3X && el.y > y + 15) {
             tempVal['partnerAccountNumber'] =
@@ -115,11 +114,10 @@ export class HipotekarnaPdfService {
             tempVal['code'] = value;
           }
           if (x > col5X && x <= col6X && el.y > y + 15) {
-            if (!tempVal['purpose']) {
-              tempVal['purpose'] = value;
-            } else {
-              tempVal['purpose'] += ' ' + value;
-            }
+            tempVal['purpose'] = this.utilService.setOrAppend(
+              tempVal['purpose'],
+              value,
+            );
           }
 
           if (x > col6X && x < col7X && el.y < y + margin) {

@@ -72,11 +72,24 @@ export class UtilService {
   }
 
   /**
-   *
-   * @param value Method that takes text in camel case and returns text with spaces. Eg: "SomeTextWithoutTHE" returns "Some Text Without THE"
+   * Method that takes text in camel case and returns text with spaces. Eg: "SomeTextWithoutTHE" returns "Some Text Without THE"
+   * @param value
    * @returns
    */
   camelCaseToText(value) {
     return value.replace(/([a-z])([A-Z])/g, '$1 $2');
+  }
+
+  /**
+   * Method that returns value that needs to be set to an object. If object exists/has value, returns appended value.
+   * @param object
+   * @param value
+   * @returns
+   */
+  setOrAppend(object, value) {
+    if (object) {
+      return object + ' ' + value;
+    }
+    return value;
   }
 }
