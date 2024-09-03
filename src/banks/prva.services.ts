@@ -8,7 +8,6 @@ export class PrvaPdfService {
   parsePdf(data) {
     let retVal = {};
     let excerptType = 1;
-    //retVal = JSON.stringify(data.pages[0].content);
     let bankName = this.checkBank(data.pages[0].content);
     if (!bankName) {
       bankName = this.checkBankRegenerated(data.pages[0].content);

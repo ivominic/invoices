@@ -92,4 +92,10 @@ export class UtilService {
     }
     return value;
   }
+
+  formatExcerptNumber(value) {
+    if (value?.length === 1) return '00' + value;
+    if (value?.length === 2) return '0' + value;
+    return value;
+  }
 }
