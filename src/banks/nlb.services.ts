@@ -44,7 +44,7 @@ export class NlbPdfService {
         el.str.trim() === searchName &&
         el.x > 42 &&
         el.x < 45 &&
-        el.y > 219 &&
+        el.y > 217 &&
         el.y < 235
       ) {
         isNameFound = true;
@@ -305,7 +305,7 @@ export class NlbPdfService {
               tempVal['demands'] = value.replace(',', '');
             }
           }
-          if (x > col5X - 9 && x < col6X - 10) {
+          if (x > col5X - 13 && x < col6X - 10) {
             if (!tempVal['code']) {
               tempVal['code'] = value.substring(0, 4).trim();
             }

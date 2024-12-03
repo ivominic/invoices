@@ -145,13 +145,7 @@ export class CkbPdfService {
         maxY = el.y;
         isDone = true;
       }
-      if (
-        value &&
-        el.x < col1X &&
-        !isNaN(value) &&
-        value < 999 &&
-        el.y < maxY
-      ) {
+      if (value && el.x < col1X && !isNaN(value) && value < 99 && el.y < maxY) {
         yArray.push(el.y);
       }
     });
