@@ -12,6 +12,7 @@ import { NlbPdfService } from './banks/nlb.services';
 import { Nlb2PdfService } from './banks/nlb2.services';
 import { CkbPdfService } from './banks/ckb.services';
 import { HipotekarnaPdfService } from './banks/hipotekarna.services';
+import { ZiraatOldPdfService } from './banks/ziraat-old.services';
 
 @Injectable()
 export class PdfParseService {
@@ -26,6 +27,7 @@ export class PdfParseService {
     private readonly universal2PdfService: Universal2PdfService,
     private readonly zapadPdfService: ZapadPdfService,
     private readonly ziraatPdfService: ZiraatPdfService,
+    private readonly ziraatOldPdfService: ZiraatOldPdfService,
     private readonly nlbPdfService: NlbPdfService,
     private readonly nlb2PdfService: Nlb2PdfService,
   ) {}
@@ -49,6 +51,7 @@ export class PdfParseService {
         !retVal['bank'] && (retVal = this.universal2PdfService.parsePdf(data));
         !retVal['bank'] && (retVal = this.zapadPdfService.parsePdf(data));
         !retVal['bank'] && (retVal = this.ziraatPdfService.parsePdf(data));
+        !retVal['bank'] && (retVal = this.ziraatOldPdfService.parsePdf(data));
         !retVal['bank'] && (retVal = this.hipotekarnaPdfService.parsePdf(data)); //last on purpose, since no way to be sure if theirs' statement.
       })
       .catch((err) => console.log(err));
