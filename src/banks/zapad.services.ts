@@ -194,13 +194,16 @@ export class ZapadPdfService {
             }
           }
           if (x >= col5X && x < col6X) {
-            tempVal['owes'] = value.replaceAll('.', '').replace(',', '.');
+            //tempVal['owes'] = value.replaceAll('.', '').replace(',', '.');
+            tempVal['owes'] = value.replaceAll(',', '');
           }
           if (x >= col6X && x < col7X) {
-            tempVal['demands'] = value.replaceAll('.', '').replace(',', '.');
+            //tempVal['demands'] = value.replaceAll('.', '').replace(',', '.');
+            tempVal['demands'] = value.replaceAll(',', '');
           }
           if (x >= col7X - 20) {
-            tempVal['state'] = value.replaceAll('.', '').replace(',', '.');
+            //tempVal['state'] = value.replaceAll('.', '').replace(',', '.');
+            tempVal['state'] = value.replaceAll(',', '');
           }
         }
       });
