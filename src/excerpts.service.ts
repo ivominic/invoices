@@ -64,4 +64,27 @@ export class ExcerptService {
       return await this.pdfParseService.parsePdf(file);
     }
   }
+
+  async parseForeignFile(file: string) {
+    if (
+      file.toLowerCase().endsWith('html') ||
+      file.toLowerCase().endsWith('htm')
+    ) {
+      const data = fs.readFileSync('./files/' + file, {
+        encoding: 'latin1',
+        flag: 'r',
+      });
+      return this.htmlParseService.parseForeignHtml(data);
+    }
+    if (file.toLowerCase().endsWith('xml')) {
+      const data = fs.readFileSync('./files/' + file, {
+        encoding: 'latin1',
+        flag: 'r',
+      });
+      return this.xmlParseService.parseXml(data);
+    }
+    if (file.toLowerCase().endsWith('pdf')) {
+      return await this.pdfParseService.parsePdf(file);
+    }
+  }
 }

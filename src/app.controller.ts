@@ -33,7 +33,12 @@ export class AppController {
 
   @Get('parse')
   async parseFile() {
-    return await this.excerptService.parseFile('lovcen002.pdf');
+    return await this.excerptService.parseFile('old.htm');
+  }
+
+  @Get('parse-foreign')
+  async parseForeignFile() {
+    return await this.excerptService.parseForeignFile('22.htm');
   }
 
   @Post('parse')

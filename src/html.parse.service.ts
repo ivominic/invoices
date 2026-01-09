@@ -202,4 +202,52 @@ export class HtmlParseService {
       .replaceAll('Ä\x8D', 'č')
       .replaceAll('Æ', 'Ć');
   }
+
+  async parseForeignHtml(data: string) {
+    let retVal: string = '';
+    retVal === '' && (retVal = this.parseForeignErsteBank(data));
+    if (retVal['number']) {
+      retVal['number'] = parseInt(retVal['number']).toString();
+    }
+
+    return retVal;
+  }
+
+  parseForeignErsteBank(data) {
+    const dataJson = {};
+    const $ = cheerio.load(data);
+    const firstTable = $('table');
+    const bankName = firstTable.find('tr').next('tr').find('td').html()?.trim();
+    if (!bankName?.toUpperCase().startsWith('ERSTE BANK AD')) {
+      return '';
+    }
+
+    dataJson['bank'] = 'ERSTE';
+    const rDate = $('p').next('p').text();
+    const excerptDate = rDate
+      .substring(rDate.length - 12, rDate.length - 2)
+      .trim();
+    dataJson['date'] = excerptDate;
+
+    const thirdTable = $('table').next('table').next('table');
+    const accountNumber = thirdTable.find('tr').find('td').next('td').html();
+    dataJson['accountNumber'] = accountNumber;
+    const numberAndYear = thirdTable
+      .find('tr')
+      .next('tr')
+      .next('tr')
+      .next('tr')
+      .next('tr')
+      .find('td')
+      .next('td')
+      .html();
+    const number = numberAndYear.split('/')[0];
+    const year = numberAndYear.split('/')[1];
+    dataJson['number'] = number;
+    dataJson['year'] = year;
+
+    const forthTable = $('table').next('table').next('table').next('table');
+    dataJson['table'] = this.tableParseErsteBank(forthTable, dataJson);
+    return JSON.stringify(dataJson);
+  }
 }
