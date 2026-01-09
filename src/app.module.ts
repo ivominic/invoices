@@ -20,6 +20,7 @@ import { UtilService } from './util.service';
 import { CkbPdfService } from './banks/ckb.services';
 import { HipotekarnaPdfService } from './banks/hipotekarna.services';
 import { ZiraatOldPdfService } from './banks/ziraat-old.services';
+import { Universal3PdfService } from './banks/universal3.services';
 
 @Module({
   imports: [MulterModule.register({ dest: './files' })],
@@ -41,6 +42,7 @@ import { ZiraatOldPdfService } from './banks/ziraat-old.services';
     PrvaPdfService,
     UniversalPdfService,
     Universal2PdfService,
+    Universal3PdfService,
     ZapadPdfService,
     ZiraatPdfService,
     ZiraatOldPdfService,

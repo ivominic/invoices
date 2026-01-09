@@ -6,6 +6,7 @@ import { LovcenPdfService } from './banks/lovcen.services';
 import { ZapadPdfService } from './banks/zapad.services';
 import { ZiraatPdfService } from './banks/ziraat.services';
 import { AdriaticPdfService } from './banks/adriatic.services';
+import { Universal3PdfService } from './banks/universal3.services';
 import { UniversalPdfService } from './banks/universal.services';
 import { Universal2PdfService } from './banks/universal2.services';
 import { NlbPdfService } from './banks/nlb.services';
@@ -23,6 +24,7 @@ export class PdfParseService {
     private readonly hipotekarnaPdfService: HipotekarnaPdfService,
     private readonly lovcenPdfService: LovcenPdfService,
     private readonly prvaPdfService: PrvaPdfService,
+    private readonly universal3PdfService: Universal3PdfService,
     private readonly universalPdfService: UniversalPdfService,
     private readonly universal2PdfService: Universal2PdfService,
     private readonly zapadPdfService: ZapadPdfService,
@@ -47,6 +49,7 @@ export class PdfParseService {
         !retVal['bank'] && (retVal = this.lovcenPdfService.parsePdf(data));
         !retVal['bank'] && (retVal = this.nlbPdfService.parsePdf(data));
         !retVal['bank'] && (retVal = this.nlb2PdfService.parsePdf(data));
+        !retVal['bank'] && (retVal = this.universal3PdfService.parsePdf(data));
         !retVal['bank'] && (retVal = this.universalPdfService.parsePdf(data));
         !retVal['bank'] && (retVal = this.universal2PdfService.parsePdf(data));
         !retVal['bank'] && (retVal = this.zapadPdfService.parsePdf(data));
