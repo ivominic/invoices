@@ -73,6 +73,8 @@ export class PdfParseService {
       .then((data) => {
         //retVal = data;
         retVal = this.ckbPdfService.parseForeignPdf(data);
+        !retVal['bank'] &&
+          (retVal = this.zapadPdfService.parseForeignPdf(data));
         /*         retVal = this.prvaPdfService.parsePdf(data);
         !retVal['bank'] && (retVal = this.addikoPdfService.parsePdf(data));
         !retVal['bank'] && (retVal = this.adriaticPdfService.parsePdf(data));
@@ -82,8 +84,7 @@ export class PdfParseService {
         !retVal['bank'] && (retVal = this.nlb2PdfService.parsePdf(data));
         !retVal['bank'] && (retVal = this.universal3PdfService.parsePdf(data));
         !retVal['bank'] && (retVal = this.universalPdfService.parsePdf(data));
-        !retVal['bank'] && (retVal = this.universal2PdfService.parsePdf(data));
-        !retVal['bank'] && (retVal = this.zapadPdfService.parsePdf(data));
+        !retVal['bank'] && (retVal = this.universal2PdfService.parsePdf(data));        
         !retVal['bank'] && (retVal = this.ziraatPdfService.parsePdf(data));
         !retVal['bank'] && (retVal = this.ziraatOldPdfService.parsePdf(data));
         !retVal['bank'] && (retVal = this.hipotekarnaPdfService.parsePdf(data)); */
