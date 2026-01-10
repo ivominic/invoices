@@ -76,15 +76,8 @@ export class ExcerptService {
       });
       return this.htmlParseService.parseForeignHtml(data);
     }
-    if (file.toLowerCase().endsWith('xml')) {
-      const data = fs.readFileSync('./files/' + file, {
-        encoding: 'latin1',
-        flag: 'r',
-      });
-      return this.xmlParseService.parseXml(data);
-    }
     if (file.toLowerCase().endsWith('pdf')) {
-      return await this.pdfParseService.parsePdf(file);
+      return await this.pdfParseService.parseForeignPdf(file);
     }
   }
 }

@@ -63,4 +63,35 @@ export class PdfParseService {
     }
     return retVal;
   }
+
+  async parseForeignPdf(file) {
+    let retVal;
+    const pdfExtract = new PDFExtract();
+    const options: PDFExtractOptions = {};
+    await pdfExtract
+      .extract('./files/' + file, options)
+      .then((data) => {
+        //retVal = data;
+        retVal = this.ckbPdfService.parseForeignPdf(data);
+        /*         retVal = this.prvaPdfService.parsePdf(data);
+        !retVal['bank'] && (retVal = this.addikoPdfService.parsePdf(data));
+        !retVal['bank'] && (retVal = this.adriaticPdfService.parsePdf(data));
+        !retVal['bank'] && (retVal = this.ckbPdfService.parsePdf(data));
+        !retVal['bank'] && (retVal = this.lovcenPdfService.parsePdf(data));
+        !retVal['bank'] && (retVal = this.nlbPdfService.parsePdf(data));
+        !retVal['bank'] && (retVal = this.nlb2PdfService.parsePdf(data));
+        !retVal['bank'] && (retVal = this.universal3PdfService.parsePdf(data));
+        !retVal['bank'] && (retVal = this.universalPdfService.parsePdf(data));
+        !retVal['bank'] && (retVal = this.universal2PdfService.parsePdf(data));
+        !retVal['bank'] && (retVal = this.zapadPdfService.parsePdf(data));
+        !retVal['bank'] && (retVal = this.ziraatPdfService.parsePdf(data));
+        !retVal['bank'] && (retVal = this.ziraatOldPdfService.parsePdf(data));
+        !retVal['bank'] && (retVal = this.hipotekarnaPdfService.parsePdf(data)); */
+      })
+      .catch((err) => console.log(err));
+    if (retVal['number']) {
+      retVal['number'] = parseInt(retVal['number']).toString();
+    }
+    return retVal;
+  }
 }
