@@ -410,22 +410,34 @@ export class CkbPdfService {
 
     for (let i = 0; i < yArray.length; i++) {
       const y = yArray[i];
-      let nextY = y + 40;
+      let nextY = y + 100;
       i < yArray.length - 1 && (nextY = yArray[i + 1]);
       const tempVal = {};
+      let accountHeight = y + 22,
+        purposeHeight = y + 12,
+        codeHeight = y + 32;
 
       content.forEach((el) => {
         const value = el.str.trim();
         if (value && el.y > y - margin && el.y < nextY - margin) {
           const x = el.x;
+          if (value === 'Račun:' && x < 80) {
+            accountHeight = el.y;
+          }
+          if (value === 'Opis:' && x < 80) {
+            purposeHeight = el.y;
+          }
+          if (value === 'DEV.šifra/TRN:' && x > 500) {
+            codeHeight = el.y;
+          }
           if (x <= col1X && el.y < y + 1) {
             tempVal['sequence'] = value;
           }
           if (
             x > col3X - margin &&
             x <= col3X + margin &&
-            el.y > y + 20 &&
-            el.y < y + 25
+            el.y > accountHeight - 3 &&
+            el.y < accountHeight + 3
           ) {
             const ret = this.splitByFirstDash(value.trim());
             tempVal['partnerAccountNumber'] = ret.first;
@@ -434,15 +446,18 @@ export class CkbPdfService {
           if (
             x > col3X - margin &&
             x <= col3X + margin &&
-            el.y > y + 10 &&
-            el.y < y + 15
+            el.y > purposeHeight - 3 &&
+            el.y < purposeHeight + 3
           ) {
             tempVal['purpose'] = value;
           }
           if (x > col1X && x < col2X && el.y < y + 1) {
             tempVal['identifier'] = value;
           }
-          if (x > col7X && x < col8X && el.y > y + 30) {
+          if (x > col3X + 80 && x < col4X && el.y < y + 1) {
+            tempVal['date'] = value;
+          }
+          if (x > col7X && x < col8X && el.y > codeHeight - 3) {
             tempVal['code'] = value;
           }
           if (x > col4X && x < col5X && el.y < y + 1) {
@@ -453,6 +468,7 @@ export class CkbPdfService {
           }
         }
       });
+      !tempVal['code'] && (tempVal['code'] = '');
       !tempVal['purpose'] && (tempVal['purpose'] = '');
       tempVal['partnerName'] &&
         (tempVal['purpose'] =
