@@ -38,13 +38,54 @@ export class AppController {
 
   @Get('parse-foreign')
   async parseForeignFile() {
-    return await this.excerptService.parseForeignFile('22.htm');
+    return await this.excerptService.parseForeignFile('2.pdf');
+  }
+
+  @Get('parse-card')
+  async parseCardFile() {
+    return await this.excerptService.parseCardFile('2.pdf');
   }
 
   @Post('parse')
   @UseInterceptors(FileInterceptor('file'))
   async parseExcerpt(@UploadedFile() file: Express.Multer.File) {
     const retVal = await this.excerptService.parseExcerptFile(
+      file.filename,
+      file.originalname,
+    );
+
+    fs.unlink('./files/' + file.filename, (err) => {
+      if (err) {
+        console.error(err);
+        return err;
+      }
+    });
+
+    return retVal;
+  }
+
+  @Post('parse-foreign')
+  @UseInterceptors(FileInterceptor('file'))
+  async parseForeignExcerpt(@UploadedFile() file: Express.Multer.File) {
+    const retVal = await this.excerptService.parseForeignExcerptFile(
+      file.filename,
+      file.originalname,
+    );
+
+    fs.unlink('./files/' + file.filename, (err) => {
+      if (err) {
+        console.error(err);
+        return err;
+      }
+    });
+
+    return retVal;
+  }
+
+  @Post('parse-card')
+  @UseInterceptors(FileInterceptor('file'))
+  async parseCardExcerpt(@UploadedFile() file: Express.Multer.File) {
+    const retVal = await this.excerptService.parseCardExcerptFile(
       file.filename,
       file.originalname,
     );

@@ -80,4 +80,54 @@ export class ExcerptService {
       return await this.pdfParseService.parseForeignPdf(file);
     }
   }
+
+  async parseForeignExcerptFile(file: string, fileName: string) {
+    // Use fs.readFile() method to read the file
+    if (
+      fileName.toLowerCase().endsWith('html') ||
+      fileName.toLowerCase().endsWith('htm')
+    ) {
+      const data = fs.readFileSync('./files/' + file, {
+        encoding: 'latin1',
+        flag: 'r',
+      });
+      return this.htmlParseService.parseForeignHtml(data);
+    }
+    if (fileName.toLowerCase().endsWith('pdf')) {
+      return await this.pdfParseService.parseForeignPdf(file);
+    }
+  }
+
+  async parseCardFile(file: string) {
+    if (
+      file.toLowerCase().endsWith('html') ||
+      file.toLowerCase().endsWith('htm')
+    ) {
+      const data = fs.readFileSync('./files/' + file, {
+        encoding: 'latin1',
+        flag: 'r',
+      });
+      return this.htmlParseService.parseForeignHtml(data);
+    }
+    if (file.toLowerCase().endsWith('pdf')) {
+      return await this.pdfParseService.parseCardPdf(file);
+    }
+  }
+
+  async parseCardExcerptFile(file: string, fileName: string) {
+    // Use fs.readFile() method to read the file
+    if (
+      fileName.toLowerCase().endsWith('html') ||
+      fileName.toLowerCase().endsWith('htm')
+    ) {
+      const data = fs.readFileSync('./files/' + file, {
+        encoding: 'latin1',
+        flag: 'r',
+      });
+      return this.htmlParseService.parseForeignHtml(data); //TODO: Change
+    }
+    if (fileName.toLowerCase().endsWith('pdf')) {
+      return await this.pdfParseService.parseCardPdf(file);
+    }
+  }
 }

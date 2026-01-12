@@ -95,4 +95,22 @@ export class PdfParseService {
     }
     return retVal;
   }
+
+  async parseCardPdf(file) {
+    let retVal;
+    const pdfExtract = new PDFExtract();
+    const options: PDFExtractOptions = {};
+    await pdfExtract
+      .extract('./files/' + file, options)
+      .then((data) => {
+        //retVal = data;
+        retVal = this.lovcenPdfService.parsePdf(data);
+        !retVal['bank'] && (retVal = this.adriaticPdfService.parsePdf(data));
+      })
+      .catch((err) => console.log(err));
+    if (retVal['number']) {
+      retVal['number'] = parseInt(retVal['number']).toString();
+    }
+    return retVal;
+  }
 }
