@@ -104,7 +104,7 @@ export class PdfParseService {
       .extract('./files/' + file, options)
       .then((data) => {
         //retVal = data;
-        retVal = this.lovcenPdfService.parsePdf(data);
+        retVal = this.zapadPdfService.parsePdf(data);
         !retVal['bank'] && (retVal = this.adriaticPdfService.parsePdf(data));
         !retVal['bank'] &&
           (retVal = this.hipotekarnaPdfService.parsePdfCard(data));
