@@ -295,4 +295,160 @@ export class HipotekarnaPdfService {
 
     return tempArray;
   }
+
+  parsePdfCard(data) {
+    let retVal = {};
+    const bankName = this.checkBankCard(data.pages[0].content);
+    if (!bankName) {
+      return retVal;
+    } else {
+      retVal['bank'] = bankName;
+    }
+    const clientData = this.readClientDataCard(data.pages[0].content);
+    retVal = { ...retVal, ...clientData };
+
+    let tableArray = [];
+    for (let i = 0; i < data.pages.length; i++) {
+      const tempArray = this.readMainTableCard(data.pages[i].content);
+      tableArray = [...tableArray, ...tempArray];
+    }
+    retVal['table'] = tableArray;
+
+    return retVal;
+  }
+
+  checkBankCard(content) {
+    let name = '';
+    const searchText = '907-52001-93';
+    content.forEach((el) => {
+      if (
+        el.str.trim() === searchText &&
+        el.x < 133 &&
+        el.x > 130 &&
+        el.y > 106 &&
+        el.y < 108
+      ) {
+        name = 'HIPOTEKARNA';
+      }
+    });
+    return name;
+  }
+
+  readClientDataCard(content) {
+    const retVal = {};
+
+    content.forEach((el) => {
+      const value = el.str.trim();
+      if (value) {
+        const x = el.x;
+        const y = el.y;
+        if (x > 997 && x < 998 && y > 59 && y < 61) {
+          retVal['name'] = value;
+        }
+        if (x > 997 && x < 998 && y > 141 && y < 145) {
+          retVal['accountNumber'] =
+            this.utilService.formatDomesticAccount(value);
+        }
+        if (el.x < 735 && el.x > 730 && el.y > 225 && el.y < 227) {
+          retVal['number'] = value;
+        }
+        if (el.x < 975 && el.x > 970 && el.y > 225 && el.y < 227) {
+          retVal['date'] = value;
+        }
+      }
+    });
+    retVal['year'] = retVal['date']?.substring(3, 7);
+    retVal['date'] = this.utilService.getLastDayOfMonth(retVal['date']);
+
+    return retVal;
+  }
+
+  readMainTableCard(content) {
+    const col1X = 63,
+      col2X = 157,
+      col3X = 550,
+      col4X = 730,
+      col5X = 880,
+      col6X = 1200,
+      col7X = 1400;
+    const margin = 5;
+    const tempArray = [],
+      yArray = [];
+
+    content.forEach((el) => {
+      const value = el.str.trim();
+      if (el.x < col1X && this.utilService.isValidDateFormat(value)) {
+        yArray.push(el.y);
+      }
+    });
+
+    for (let i = 0; i < yArray.length; i++) {
+      const y = yArray[i];
+      let nextY = y + 35;
+      i < yArray.length - 1 && (nextY = yArray[i + 1]);
+      const tempVal = {};
+      tempVal['partnerAccountNumber'] = '';
+
+      content.forEach((el) => {
+        const value = el.str.trim();
+        if (
+          el.x < col1X &&
+          el.y > y - margin &&
+          el.y < nextY - margin &&
+          this.utilService.isValidDateFormat(value)
+        ) {
+          tempVal['itemDate'] = value;
+        }
+        if (value && el.y > y - margin && el.y < nextY - margin) {
+          const x = el.x;
+          if (x > col2X && x <= col3X && el.y > y - 1 && el.y < y + 15) {
+            tempVal['partnerName'] = this.utilService.setOrAppend(
+              tempVal['partnerName'],
+              value,
+            );
+          }
+          if (x > col2X && x <= col3X && el.y > y + 15) {
+            tempVal['partnerAccountNumber'] =
+              this.utilService.formatDomesticAccount(value);
+          }
+          if (x >= col3X && x <= col4X) {
+            tempVal['owes'] = value.replace(',', '');
+          }
+          if (x >= col4X && x <= col5X) {
+            tempVal['demands'] = value.replace(',', '');
+          }
+          if (x >= col5X && x <= col6X && el.y < y + margin) {
+            tempVal['code'] = value;
+          }
+          if (x > col5X && x <= col6X && el.y > y + margin) {
+            tempVal['purpose'] = this.utilService.setOrAppend(
+              tempVal['purpose'],
+              value,
+            );
+          }
+
+          if (x > col6X && x < col7X && el.y < y + margin) {
+            tempVal['debitNumber'] = value;
+          }
+          if (x > col6X && x < col7X && el.y > y + 15) {
+            if (!tempVal['debitNumber']) {
+              tempVal['debitNumber'] = value;
+            } else {
+              tempVal['approvalNumber'] = value;
+            }
+          }
+        }
+      });
+
+      tempVal['debitNumber'] = tempVal['debitNumber']?.substring(3);
+      tempVal['approvalNumber'] = tempVal['approvalNumber']?.substring(3);
+      tempVal['partnerName'] &&
+        (tempVal['purpose'] =
+          tempVal['partnerName'] + ' ' + tempVal['purpose']);
+      tempVal['purpose'] += ' ' + tempVal['itemDate'];
+      tempArray.push(tempVal);
+    }
+
+    return tempArray;
+  }
 }

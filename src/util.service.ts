@@ -32,6 +32,11 @@ export class UtilService {
     );
   }
 
+  isValidDateFormat(dateStr) {
+    const regex = /^(0[1-9]|[12][0-9]|3[01])\.(0[1-9]|1[0-2])\.\d{4}\.$/;
+    return regex.test(dateStr);
+  }
+
   isNumeric(value: string): boolean {
     const rgx = /^[0-9]{1,}$/;
     return rgx.test(value);
@@ -97,5 +102,17 @@ export class UtilService {
     if (value?.length === 1) return '00' + value;
     if (value?.length === 2) return '0' + value;
     return value;
+  }
+
+  /**
+   * Returns last day of the month.
+   * @param input - month.year. for example "05.2026."
+   * @returns
+   */
+  getLastDayOfMonth(input) {
+    const [month, year] = input.split('.');
+    // JS Date trick: day 0 of the next month = last day of the current month
+    const lastDay = new Date(Number(year), Number(month), 0).getDate();
+    return `${String(lastDay).padStart(2, '0')}.${month}.${year}.`;
   }
 }

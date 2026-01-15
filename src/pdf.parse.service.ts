@@ -106,6 +106,8 @@ export class PdfParseService {
         //retVal = data;
         retVal = this.lovcenPdfService.parsePdf(data);
         !retVal['bank'] && (retVal = this.adriaticPdfService.parsePdf(data));
+        !retVal['bank'] &&
+          (retVal = this.hipotekarnaPdfService.parsePdfCard(data));
       })
       .catch((err) => console.log(err));
     if (retVal['number']) {
