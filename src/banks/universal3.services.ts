@@ -77,8 +77,8 @@ export class Universal3PdfService {
     const col1X = 40,
       col2X = 185,
       col3X = 280,
-      col4X = 340,
-      col5X = 415,
+      col4X = 350,
+      col5X = 425,
       col6X = 460,
       col7X = 570,
       col8X = 670;
