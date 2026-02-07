@@ -462,7 +462,7 @@ export class HipotekarnaPdfService {
     }
 
     const clientData = this.readForeignClientData(data.pages[0].content);
-    retVal = { ...clientData };
+    retVal = { ...retVal, ...clientData };
 
     let tableArray = [];
     for (let i = 0; i < data.pages.length; i++) {

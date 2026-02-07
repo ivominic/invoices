@@ -270,4 +270,129 @@ export class LovcenPdfService {
     });
     return retVal;
   }
+
+  parseForeignPdf(data) {
+    let retVal = {};
+    const bankName = this.checkForeignBank(data.pages[0].content);
+    if (!bankName) {
+      return retVal;
+    } else {
+      retVal['bank'] = bankName;
+    }
+
+    const clientData = this.readForeignClientData(data.pages[0].content);
+    retVal = { ...retVal, ...clientData };
+
+    let tableArray = [];
+    for (let i = 0; i < data.pages.length; i++) {
+      const tempArray = this.readForeignMainTable(data.pages[i].content);
+      tableArray = [...tableArray, ...tempArray];
+    }
+    retVal['table'] = tableArray;
+    return retVal;
+  }
+
+  checkForeignBank(content) {
+    let name = '';
+    const searchText = 'Lovcen Banka';
+    content.forEach((el) => {
+      if (el.str.trim() === searchText && el.x == 59 && el.y > 767) {
+        name = 'LOVCEN';
+      }
+    });
+    return name;
+  }
+
+  readForeignClientData(content) {
+    const retVal = {};
+
+    content.forEach((el) => {
+      const value = el.str.trim();
+      if (value) {
+        if (el.x > 370 && el.x < 375 && el.y < 135 && el.y > 130) {
+          retVal['clientName'] = value.trim();
+        }
+        if (el.x > 460 && el.x < 470 && el.y < 95 && el.y > 90) {
+          retVal['accountNumber'] = value.trim();
+        }
+        if (el.x > 530 && el.x < 535 && el.y < 46 && el.y > 44) {
+          retVal['number'] = value.trim()?.substring(4, 7);
+        }
+        if (el.x > 520 && el.x < 525 && el.y < 83 && el.y > 80) {
+          retVal['date'] = value.trim();
+        }
+      }
+    });
+    retVal['year'] = retVal['date']?.substring(6, 10);
+
+    return retVal;
+  }
+
+  readForeignMainTable(content) {
+    const col1X = 60,
+      col2X = 95,
+      col3X = 260,
+      col4X = 360,
+      col5X = 470,
+      col6X = 520;
+    let margin1 = 15,
+      margin2 = 15;
+    const tempArray = [],
+      yArray = [];
+
+    content.forEach((el) => {
+      const value = el.str.trim();
+      if (value && el.x < col1X && this.utilService.isValidDate(value.trim())) {
+        yArray.push(el.y);
+      }
+    });
+
+    for (let i = 0; i < yArray.length; i++) {
+      const y = yArray[i];
+      i < yArray.length - 1 && (margin2 = (yArray[i + 1] - yArray[i]) / 2);
+      i > 0 && (margin1 = (yArray[i] - yArray[i - 1]) / 2);
+      const tempVal = {};
+
+      content.forEach((el) => {
+        const value = el.str.trim();
+        if (value && el.y > y - margin1 && el.y < y + margin2) {
+          const x = el.x;
+          if (x < col1X && el.y === y) {
+            tempVal['date'] = value;
+          }
+          if (x > col2X && x <= col3X) {
+            tempVal['purpose'] = this.utilService.setOrAppend(
+              tempVal['purpose'],
+              value,
+            );
+          }
+          if (x > col3X && x <= col4X) {
+            if (el.y < y) {
+              tempVal['partnerName'] = this.utilService.setOrAppend(
+                tempVal['partnerName'],
+                value,
+              );
+            } else {
+              tempVal['partnerAccountNumber'] = value;
+            }
+          }
+          // if (x >= col4X && x <= col5X) {
+          //   tempVal['purpose'] = this.utilService.setOrAppend(
+          //     tempVal['purpose'],
+          //     value,
+          //   );
+          // }
+          if (x >= col5X && x <= col6X) {
+            tempVal['owes'] = value.replaceAll('.', '').replace(',', '.');
+          }
+          if (x >= col6X) {
+            tempVal['demands'] = value.replaceAll('.', '').replace(',', '.');
+          }
+        }
+      });
+      tempArray.push(tempVal);
+    }
+
+    return tempArray;
+  }
 }
