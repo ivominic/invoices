@@ -451,4 +451,130 @@ export class HipotekarnaPdfService {
 
     return tempArray;
   }
+
+  parseForeignPdf(data) {
+    let retVal = {};
+    const bankName = this.checkForeignBank(data.pages[0].content);
+    if (!bankName) {
+      return retVal;
+    } else {
+      retVal['bank'] = bankName;
+    }
+
+    const clientData = this.readForeignClientData(data.pages[0].content);
+    retVal = { ...clientData };
+
+    let tableArray = [];
+    for (let i = 0; i < data.pages.length; i++) {
+      const tempArray = this.readForeignMainTable(data.pages[i].content);
+      tableArray = [...tableArray, ...tempArray];
+    }
+    retVal['table'] = tableArray;
+    return retVal;
+  }
+
+  checkForeignBank(content) {
+    let name = '';
+    const searchText = 'HIPOTEKARNA BANKA AD';
+    content.forEach((el) => {
+      if (el.str.trim() === searchText && el.x == 59 && el.y > 767) {
+        name = 'HIPOTEKARNA';
+      }
+    });
+    return name;
+  }
+
+  readForeignClientData(content) {
+    const retVal = {};
+
+    content.forEach((el) => {
+      const value = el.str.trim();
+      if (value) {
+        if (el.x > 370 && el.x < 375 && el.y < 139 && el.y > 137) {
+          retVal['clientName'] = value.trim();
+        }
+        if (el.x > 430 && el.x < 440 && el.y < 83 && el.y > 80) {
+          retVal['accountNumber'] = value.trim();
+        }
+        if (el.x > 505 && el.x < 510 && el.y < 46 && el.y > 44) {
+          retVal['number'] = value.trim()?.substring(4, 7);
+        }
+        if (el.x > 497 && el.x < 498 && el.y < 94 && el.y > 93) {
+          retVal['date'] = value.trim();
+        }
+      }
+    });
+    retVal['year'] = retVal['date']?.substring(6, 10);
+
+    return retVal;
+  }
+
+  readForeignMainTable(content) {
+    const col1X = 60,
+      col2X = 80,
+      col3X = 120,
+      col4X = 290,
+      col5X = 440,
+      col6X = 520;
+    let margin1 = 20,
+      margin2 = 20;
+    const tempArray = [],
+      yArray = [];
+
+    content.forEach((el) => {
+      const value = el.str.trim();
+      if (value && el.x < col1X && !isNaN(value)) {
+        yArray.push(el.y);
+      }
+    });
+
+    for (let i = 0; i < yArray.length; i++) {
+      const y = yArray[i];
+      i < yArray.length - 1 && (margin2 = (yArray[i + 1] - yArray[i]) / 2);
+      i > 0 && (margin1 = (yArray[i] - yArray[i - 1]) / 2);
+      const tempVal = {};
+
+      content.forEach((el) => {
+        const value = el.str.trim();
+        if (value && el.y > y - margin1 && el.y < y + margin2) {
+          const x = el.x;
+          if (x < col1X && el.y === y) {
+            tempVal['sequence'] = value;
+          }
+          if (x > col1X && x <= col2X) {
+            if (el.y < y) {
+              tempVal['dateOne'] = value;
+            } else {
+              tempVal['dateTwo'] = value;
+            }
+          }
+          if (x > col3X && x <= col4X) {
+            if (el.y < y + 10) {
+              tempVal['partnerName'] = this.utilService.setOrAppend(
+                tempVal['partnerName'],
+                value,
+              );
+            } else {
+              tempVal['partnerAccountNumber'] = value;
+            }
+          }
+          if (x >= col4X && x <= col5X) {
+            tempVal['purpose'] = this.utilService.setOrAppend(
+              tempVal['purpose'],
+              value,
+            );
+          }
+          if (x >= col5X && x <= col6X) {
+            tempVal['owes'] = value.replaceAll('.', '').replace(',', '.');
+          }
+          if (x >= col6X) {
+            tempVal['demands'] = value.replaceAll('.', '').replace(',', '.');
+          }
+        }
+      });
+      tempArray.push(tempVal);
+    }
+
+    return tempArray;
+  }
 }

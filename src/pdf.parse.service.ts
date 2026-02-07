@@ -86,8 +86,9 @@ export class PdfParseService {
         !retVal['bank'] && (retVal = this.universalPdfService.parsePdf(data));
         !retVal['bank'] && (retVal = this.universal2PdfService.parsePdf(data));        
         !retVal['bank'] && (retVal = this.ziraatPdfService.parsePdf(data));
-        !retVal['bank'] && (retVal = this.ziraatOldPdfService.parsePdf(data));
-        !retVal['bank'] && (retVal = this.hipotekarnaPdfService.parsePdf(data)); */
+        !retVal['bank'] && (retVal = this.ziraatOldPdfService.parsePdf(data));*/
+        !retVal['bank'] &&
+          (retVal = this.hipotekarnaPdfService.parseForeignPdf(data));
       })
       .catch((err) => console.log(err));
     if (retVal['number']) {
