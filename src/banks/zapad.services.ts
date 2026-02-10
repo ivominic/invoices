@@ -337,17 +337,17 @@ export class ZapadPdfService {
           if (x > col3X && x < col4X && el.y < y + 5) {
             tempVal['date'] = value.trim();
           }
-          if (x > col4X && x < col5X) {
-            tempVal['owes'] = value.replaceAll('.', '').replace(',', '.');
-            //tempVal['owes'] = value.replaceAll(',', '');
+          if (x > col4X && x < col5X && el.y < y + margin) {
+            //tempVal['owes'] = value.replaceAll('.', '').replace(',', '.');
+            tempVal['owes'] = value.replaceAll(',', '');
           }
-          if (x > col5X && x < col6X) {
-            tempVal['demands'] = value.replaceAll('.', '').replace(',', '.');
-            //tempVal['demands'] = value.replaceAll(',', '');
+          if (x > col5X && x < col6X && el.y < y + margin) {
+            //tempVal['demands'] = value.replaceAll('.', '').replace(',', '.');
+            tempVal['demands'] = value.replaceAll(',', '');
           }
-          if (x > col7X) {
-            tempVal['state'] = value.replaceAll('.', '').replace(',', '.');
-            //tempVal['state'] = value.replaceAll(',', '');
+          if (x > col7X && el.y < y + margin) {
+            //tempVal['state'] = value.replaceAll('.', '').replace(',', '.');
+            tempVal['state'] = value.replaceAll(',', '');
           }
         }
       });

@@ -543,7 +543,7 @@ export class HipotekarnaPdfService {
           }
           if (x > col1X && x <= col2X) {
             if (el.y < y) {
-              tempVal['dateOne'] = value;
+              tempVal['itemDate'] = value;
             } else {
               tempVal['dateTwo'] = value;
             }
@@ -572,6 +572,7 @@ export class HipotekarnaPdfService {
           }
         }
       });
+      if (!tempVal['itemDate'].endsWith('.')) tempVal['itemDate'] += '.';
       tempArray.push(tempVal);
     }
 
