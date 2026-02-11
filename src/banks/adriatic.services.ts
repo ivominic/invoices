@@ -221,8 +221,6 @@ export class AdriaticPdfService {
 
     content.forEach((el) => {
       const value = el.str.trim();
-      const excerptDateDomesticText = 'POČETNO STANJE NA DAN: ',
-        excerptDateText = 'INITIAL BALANCE ON DAY: ';
       if (value) {
         const x = el.x;
         const y = el.y;
@@ -247,14 +245,8 @@ export class AdriaticPdfService {
             retVal['number'] = value;
           }
         }
-        /*if (x > 495 && x < 500 && y > 92 && y < 94) {
+        if (x > 495 && x < 500 && y > 92 && y < 94) {
           retVal['date'] = value;
-        }*/
-        if (value.startsWith(excerptDateText)) {
-          retVal['date'] = value.replaceAll(excerptDateText, '').trim();
-        }
-        if (value.startsWith(excerptDateDomesticText)) {
-          retVal['date'] = value.replaceAll(excerptDateDomesticText, '').trim();
         }
       }
     });
@@ -342,24 +334,22 @@ export class AdriaticPdfService {
           }
           if (x > col1X && x < col2X) {
             if (el.y < y) {
-              tempVal['dateOne'] = value;
+              tempVal['itemDate'] = value + '.';
             } else {
-              tempVal['dateTwo'] = value;
+              tempVal['dateTwo'] = value + '.';
             }
           }
           if (x > col2X && x < col3X) {
-            if (tempVal['purposeOne']) {
-              tempVal['purposeOne'] += ' ' + value;
-            } else {
-              tempVal['purposeOne'] = value;
-            }
+            tempVal['partnerName'] = this.utilService.setOrAppend(
+              tempVal['partnerName'],
+              value,
+            );
           }
           if (x > col3X && x < col4X) {
-            if (tempVal['purposeTwo']) {
-              tempVal['purposeTwo'] += ' ' + value;
-            } else {
-              tempVal['purposeTwo'] = value;
-            }
+            tempVal['purpose'] = this.utilService.setOrAppend(
+              tempVal['purpose'],
+              value,
+            );
           }
           if (x > col4X && x < col5X) {
             tempVal['owes'] = value.replaceAll(',', '');
@@ -369,6 +359,7 @@ export class AdriaticPdfService {
           }
         }
       });
+      tempVal['partnerAccountNumber'] = '';
       tempArray.push(tempVal);
     }
 
