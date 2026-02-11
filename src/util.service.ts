@@ -115,4 +115,13 @@ export class UtilService {
     const lastDay = new Date(Number(year), Number(month), 0).getDate();
     return `${String(lastDay).padStart(2, '0')}.${month}.${year}.`;
   }
+
+  convertReverseDate(dateStr) {
+    const regex = /^\d{4}\.\d{2}\.\d{2}$/;
+    if (!regex.test(dateStr)) {
+      throw new Error('Invalid date format. Expected yyyy.MM.dd');
+    }
+    const [year, month, day] = dateStr.split('.');
+    return `${day}.${month}.${year}.`;
+  }
 }

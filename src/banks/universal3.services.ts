@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { UtilService } from 'src/util.service';
 
+let isDone = false;
 @Injectable()
 export class Universal3PdfService {
   constructor(private readonly utilService: UtilService) {}
@@ -203,6 +204,167 @@ export class Universal3PdfService {
       tempVal['partnerName'] &&
         (tempVal['purpose'] =
           tempVal['partnerName'] + ' ' + tempVal['purpose']);
+      //tempVal['debitNumber'] = tempVal['debitNumber']?.substring(3);
+      //tempVal['approvalNumber'] = tempVal['approvalNumber']?.substring(3);
+      tempArray.push(tempVal);
+    }
+
+    return tempArray;
+  }
+
+  parseForeignPdf(data) {
+    isDone = false;
+    let retVal = {};
+    const bankName = this.checkForeignBank(data.pages[0].content);
+    if (!bankName) {
+      return retVal;
+    } else {
+      retVal['bank'] = bankName;
+    }
+    const clientData = this.readForeignClientData(data.pages[0].content);
+    retVal = { ...retVal, ...clientData };
+
+    let tableArray = [];
+    for (let i = 0; i < data.pages.length; i++) {
+      if (!isDone) {
+        const tempArray = this.readForeignMainTable(data.pages[i].content);
+        tableArray = [...tableArray, ...tempArray];
+      }
+    }
+    retVal['table'] = tableArray;
+
+    return retVal;
+  }
+
+  checkForeignBank(content) {
+    let name = '';
+    const searchText = 'E-mail: info@ucbank.me';
+    content.forEach((el) => {
+      if (
+        el.str.trim() === searchText &&
+        el.y > 70 &&
+        el.y < 75 &&
+        el.x > 453
+      ) {
+        name = 'UNIVERSAL';
+      }
+    });
+    return name;
+  }
+
+  readForeignClientData(content) {
+    const retVal = {};
+
+    content.forEach((el) => {
+      const value = el.str.trim();
+      if (value) {
+        const x = el.x;
+        const y = el.y;
+
+        if (x > 50 && x < 55 && y > 170 && y < 175) {
+          retVal['name'] = value.replace('Name:', '').trim();
+        }
+        if (x > 445 && x < 455 && y > 172 && y < 175) {
+          retVal['accountNumber'] = value.trim();
+        }
+        if (x > 445 && x < 455 && y > 150 && y < 155) {
+          retVal['number'] = parseInt(value.substring(4));
+        }
+        if (x > 445 && x < 455 && y > 197 && y < 199) {
+          retVal['date'] = this.utilService.convertReverseDate(value.trim());
+        }
+      }
+    });
+    retVal['year'] = retVal['date']?.substring(6, 10);
+
+    return retVal;
+  }
+
+  readForeignMainTable(content) {
+    const col1X = 40,
+      col2X = 55,
+      col3X = 165,
+      col4X = 215,
+      col5X = 275,
+      col6X = 310,
+      col7X = 370,
+      col8X = 420,
+      col9X = 480;
+    const margin = 10;
+    const tempArray = [],
+      yArray = [];
+
+    content.forEach((el) => {
+      const value = el.str.trim();
+      if (
+        value.includes(
+          'For further information please contact International Payments Department at',
+        )
+      ) {
+        isDone = true;
+      }
+      if (value && el.x > col1X - 10 && el.x < col1X + 10) {
+        if (!isNaN(value) && parseInt(value) < 99) {
+          yArray.push(el.y);
+        }
+      }
+    });
+
+    for (let i = 0; i < yArray.length; i++) {
+      const y = yArray[i];
+      let nextY = y + 30;
+      i < yArray.length - 1 && (nextY = yArray[i + 1]);
+      const tempVal = {};
+      tempVal['partnerAccountNumber'] = '';
+
+      content.forEach((el) => {
+        const value = el.str.trim();
+        if (value && el.y > y - margin && el.y < nextY - margin) {
+          const x = el.x;
+          if (value && el.x > col1X - 10 && el.x < col1X + 10) {
+            if (!isNaN(value) && parseInt(value) < 99) {
+              tempVal['sequence'] = value;
+            }
+          }
+          if (x > col2X && x < col3X) {
+            tempVal['partnerName'] = this.utilService.setOrAppend(
+              tempVal['partnerName'],
+              value.trim(),
+            );
+          }
+          if (x > col3X && x < col4X) {
+            tempVal['bookingDate'] = value.trim() + '.';
+          }
+          if (x > col4X && x < col5X) {
+            tempVal['itemDate'] = value.trim() + '.';
+          }
+          if (x > col5X && x < col6X) {
+            tempVal['code'] = value;
+          }
+          if (x > col6X && x < col7X) {
+            tempVal['owes'] = value.replace(',', '');
+          }
+          if (x > col7X && x < col8X) {
+            tempVal['demands'] = value.replace(',', '');
+          }
+          if (x > col8X && x < col9X) {
+            tempVal['purpose'] = this.utilService.setOrAppend(
+              tempVal['purpose'],
+              value.trim(),
+            );
+          }
+          if (x > col9X) {
+            tempVal['complaint'] = value;
+          }
+        }
+      });
+      if (tempVal['partnerName'].includes('//')) {
+        const parts = tempVal['partnerName'].split('//');
+        tempVal['partnerAccountNumber'] = parts[parts.length - 1];
+      }
+      //tempVal['partnerName'] &&
+      //  (tempVal['purpose'] =
+      //    tempVal['partnerName'] + ' ' + tempVal['purpose']);
       //tempVal['debitNumber'] = tempVal['debitNumber']?.substring(3);
       //tempVal['approvalNumber'] = tempVal['approvalNumber']?.substring(3);
       tempArray.push(tempVal);
