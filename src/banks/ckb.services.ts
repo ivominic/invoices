@@ -318,7 +318,7 @@ export class CkbPdfService {
     content.forEach((el) => {
       const value = el.str.trim();
       if (value && value.startsWith(searchText)) {
-        if (el.x > 220 && el.y < 70 && el.y > 68) {
+        if (el.x > 150 && el.y < 70 && el.y > 68) {
           const tempArray = value.split(' ');
           if (tempArray.length === 16) {
             retVal['number'] = tempArray[3];
