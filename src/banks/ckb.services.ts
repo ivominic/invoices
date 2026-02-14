@@ -294,7 +294,7 @@ export class CkbPdfService {
     content.forEach((el) => {
       if (
         el.str.trim().startsWith(searchText) &&
-        el.x > 220 &&
+        el.x > 150 &&
         el.y < 70 &&
         el.y > 68
       ) {
