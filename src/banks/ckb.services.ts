@@ -342,7 +342,7 @@ export class CkbPdfService {
       col2X = 92,
       col3X = 110,
       col4X = 260,
-      col5X = 380,
+      col5X = 340,
       col6X = 440,
       col7X = 610,
       col8X = 660;
