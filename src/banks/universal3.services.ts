@@ -83,7 +83,7 @@ export class Universal3PdfService {
       col6X = 460,
       col7X = 570,
       col8X = 670;
-    const margin = 10;
+    const margin = 30;
     const tempArray = [],
       yArray = [];
 
@@ -98,13 +98,13 @@ export class Universal3PdfService {
 
     for (let i = 0; i < yArray.length; i++) {
       const y = yArray[i];
-      let nextY = y + 30;
-      i < yArray.length - 1 && (nextY = yArray[i + 1]);
+      //let nextY = y + 30;
+      //i < yArray.length - 1 && (nextY = yArray[i + 1]);
       const tempVal = {};
 
       content.forEach((el) => {
         const value = el.str.trim();
-        if (value && el.y > y - margin && el.y < nextY - margin) {
+        if (value && el.y > y - margin && el.y < y + margin) {
           const x = el.x;
           if (value && el.x > col1X - 10 && el.x < col1X + 10) {
             if (!isNaN(value) && parseInt(value) < 99) {
