@@ -394,7 +394,7 @@ export class NlbPdfService {
           retVal['name'] = value.trim();
         }
         if (x > 80 && x < 85 && y > 270 && y < 275) {
-          retVal['number'] = value.substring(0, 3).toString();
+          retVal['number'] = value.substring(0, 3);
           retVal['number'] = this.utilService.formatExcerptNumber(
             retVal['number'],
           );

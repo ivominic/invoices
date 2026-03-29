@@ -83,6 +83,8 @@ export class PdfParseService {
         !retVal['bank'] &&
           (retVal = this.universal3PdfService.parseForeignPdf(data));
         !retVal['bank'] && (retVal = this.nlbPdfService.parseForeignPdf(data));
+        !retVal['bank'] &&
+          (retVal = this.ziraatPdfService.parseForeignPdf(data));
         !retVal['bank'] && (retVal = this.adriaticPdfService.parsePdf(data));
         /*         retVal = this.prvaPdfService.parsePdf(data);
         !retVal['bank'] && (retVal = this.addikoPdfService.parsePdf(data));

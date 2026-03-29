@@ -253,4 +253,174 @@ export class ZiraatPdfService {
 
     return tempArray;
   }
+
+  parseForeignPdf(data) {
+    isDone = false;
+    let retVal = {};
+    const bankName = this.checkForeignBank(data.pages[0].content);
+    if (!bankName) {
+      return retVal;
+    } else {
+      retVal['bank'] = bankName;
+    }
+    const clientData = this.readForeignClientData(data.pages[0].content);
+    retVal = { ...retVal, ...clientData };
+
+    let tableArray = [];
+    for (let i = 0; i < data.pages.length; i++) {
+      if (!isDone) {
+        const tempArray = this.readForeignMainTable(data.pages[i].content);
+        tableArray = [...tableArray, ...tempArray];
+      }
+    }
+    retVal['table'] = tableArray;
+
+    return retVal;
+  }
+
+  checkForeignBank(content) {
+    let name = '';
+    const searchText =
+      'MOLIMO VAS DA IZVOD PREGLEDATE I IZVIJESTITE NAS O EVENTULANIM NESLAGANJIMA NA TEL. +382 (0)20 442200';
+    content.forEach((el) => {
+      if (el.str.trim().startsWith(searchText) && el.x < 20) {
+        name = 'ZIRAAT';
+      }
+    });
+    return name;
+  }
+
+  readForeignClientData(content) {
+    const numberText = 'DEVIZNI IZVOD BROJ ';
+    const retVal = {};
+
+    content.forEach((el) => {
+      const value = el.str.trim();
+      if (value) {
+        const x = el.x;
+        const y = el.y;
+        if (x > 83 && x < 86 && y > 95 && y < 99) {
+          retVal['name'] = value;
+        }
+        if (x > 83 && x < 86 && y > 110 && y < 115) {
+          retVal['accountNumber'] = value.trim();
+        }
+        if (value.startsWith(numberText) && y < 50) {
+          const tempArray = value.split(' ');
+          retVal['number'] = tempArray[tempArray.length - 1].substring(0, 3);
+        }
+        if (x > 200 && x < 210 && y > 300 && y < 400) {
+          if (this.utilService.isValidDateWithoutPoint(value.trim())) {
+            retVal['date'] = value.trim();
+          }
+        }
+      }
+    });
+    retVal['year'] = retVal['date']?.substring(6, 10);
+
+    return retVal;
+  }
+
+  readForeignMainTable(content) {
+    const searchText =
+      'MOLIMO VAS DA IZVOD PREGLEDATE I IZVIJESTITE NAS O EVENTULANIM NESLAGANJIMA NA TEL. +382 (0)20 442200';
+    const col1X = 25,
+      col2X = 45,
+      col3X = 200,
+      col4X = 250,
+      col5X = 330,
+      col6X = 400,
+      col7X = 425,
+      col8X = 505;
+    const margin = 20;
+    const tempArray = [],
+      yArray = [];
+    let maxY = 3000;
+
+    content.forEach((el) => {
+      const value = el.str.trim();
+      if (value.startsWith(searchText)) {
+        maxY = el.y - 50;
+        isDone = true;
+      }
+      if (
+        value &&
+        el.x < col1X &&
+        !isNaN(value) &&
+        value < 999 &&
+        el.y < maxY
+      ) {
+        yArray.push(el.y);
+      }
+    });
+
+    for (let i = 0; i < yArray.length; i++) {
+      const y = yArray[i];
+      let nextY = y + 35;
+      i < yArray.length - 1 && (nextY = yArray[i + 1]);
+      const tempVal = {};
+      tempVal['partnerAccountNumber'] = '';
+      tempVal['partnerName'] = '';
+
+      content.forEach((el) => {
+        const value = el.str.trim();
+        if (value && el.y > y - margin && el.y < nextY - margin) {
+          const x = el.x;
+          if (x <= col1X) {
+            tempVal['sequence'] = value;
+          }
+          if (x > col1X && x < col2X) {
+            tempVal['partnerName'] += this.utilService.setOrAppend(
+              tempVal['partnerName'],
+              value.trim(),
+            );
+          }
+          if (x > col3X && x < col4X) {
+            if (this.utilService.isValidDate(value)) {
+              tempVal['itemDate'] = value;
+            }
+          }
+          if (x > col4X && x < col5X) {
+            if (value === '- EUR') {
+              tempVal['owes'] = '0.00';
+            } else {
+              tempVal['owes'] = value
+                .replace(',', '')
+                .replace(' EUR', '')
+                .trim();
+            }
+          }
+          if (x > col5X && x < col6X) {
+            if (value === '- EUR') {
+              tempVal['demands'] = '0.00';
+            } else {
+              tempVal['demands'] = value
+                .replace(',', '')
+                .replace(' EUR', '')
+                .trim();
+            }
+          }
+          if (x > col6X && x < col7X) {
+            tempVal['code'] = value;
+          }
+          if (x > col7X && x < col8X) {
+            tempVal['purpose'] = this.utilService.setOrAppend(
+              tempVal['purpose'],
+              value.trim(),
+            );
+          }
+
+          if (x > col8X) {
+            tempVal['orderNumber'] = value.trim();
+          }
+        }
+      });
+      tempVal['partnerName'] &&
+        (tempVal['purpose'] =
+          tempVal['partnerName'] + ' ' + tempVal['purpose']);
+      tempArray.push(tempVal);
+    }
+
+    return tempArray;
+  }
 }
