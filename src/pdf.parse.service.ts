@@ -41,8 +41,8 @@ export class PdfParseService {
     await pdfExtract
       .extract('./files/' + file, options)
       .then((data) => {
-        //retVal = data;
-        retVal = this.prvaPdfService.parsePdf(data);
+        retVal = data;
+        /*retVal = this.prvaPdfService.parsePdf(data);
         !retVal['bank'] && (retVal = this.addikoPdfService.parsePdf(data));
         !retVal['bank'] && (retVal = this.adriaticPdfService.parsePdf(data));
         !retVal['bank'] && (retVal = this.ckbPdfService.parsePdf(data));
@@ -56,6 +56,7 @@ export class PdfParseService {
         !retVal['bank'] && (retVal = this.ziraatPdfService.parsePdf(data));
         !retVal['bank'] && (retVal = this.ziraatOldPdfService.parsePdf(data));
         !retVal['bank'] && (retVal = this.hipotekarnaPdfService.parsePdf(data)); //last on purpose, since no way to be sure if theirs' statement.
+      */
       })
       .catch((err) => console.log(err));
     if (retVal['number']) {
@@ -81,6 +82,7 @@ export class PdfParseService {
           (retVal = this.hipotekarnaPdfService.parseForeignPdf(data));
         !retVal['bank'] &&
           (retVal = this.universal3PdfService.parseForeignPdf(data));
+        !retVal['bank'] && (retVal = this.nlbPdfService.parseForeignPdf(data));
         !retVal['bank'] && (retVal = this.adriaticPdfService.parsePdf(data));
         /*         retVal = this.prvaPdfService.parsePdf(data);
         !retVal['bank'] && (retVal = this.addikoPdfService.parsePdf(data));

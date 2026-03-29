@@ -342,4 +342,141 @@ export class NlbPdfService {
 
     return tempArray;
   }
+
+  parseForeignPdf(data) {
+    let retVal = {};
+    const bankName = this.checkBankForeign(data.pages[0].content);
+    if (!bankName) {
+      return retVal;
+    } else {
+      retVal['bank'] = bankName;
+    }
+    const clientData = this.readClientDataForeign(data.pages[0].content);
+    retVal = { ...retVal, ...clientData };
+
+    let tableArray = [];
+    for (let i = 0; i < data.pages.length; i++) {
+      const tempArray = this.readMainTableForeign(data.pages[i].content);
+      tableArray = [...tableArray, ...tempArray];
+    }
+    retVal['table'] = tableArray;
+
+    return retVal;
+  }
+
+  checkBankForeign(content) {
+    let name = '';
+    const searchName = 'NLB BANKA AD';
+    content.forEach((el) => {
+      if (
+        el.str.trim() === searchName &&
+        el.x > 400 &&
+        el.x < 405 &&
+        el.y > 80 &&
+        el.y < 85
+      ) {
+        name = 'NLB';
+      }
+    });
+    return name;
+  }
+
+  readClientDataForeign(content) {
+    const retVal = {};
+
+    content.forEach((el) => {
+      const value = el.str.trim();
+      if (value) {
+        const y = el.y,
+          x = el.x;
+
+        if (x > 35 && x < 41 && y > 160 && y < 165) {
+          retVal['name'] = value.trim();
+        }
+        if (x > 80 && x < 85 && y > 270 && y < 275) {
+          retVal['number'] = value.substring(0, 3).toString();
+          retVal['number'] = this.utilService.formatExcerptNumber(
+            retVal['number'],
+          );
+        }
+        if (x > 65 && x < 100 && y > 285 && y < 290) {
+          retVal['accountNumber'] = value.trim();
+        }
+        if (x > 35 && x < 40 && y > 370 && y < 400) {
+          if (this.utilService.isValidDateWithoutPoint(value.trim())) {
+            retVal['date'] = value.trim();
+          }
+        }
+      }
+    });
+    retVal['year'] = retVal['date']?.substring(6, 10);
+
+    return retVal;
+  }
+
+  readMainTableForeign(content) {
+    const col1X = 40,
+      col2X = 120,
+      col3X = 250,
+      col4X = 430,
+      col5X = 530;
+    const margin = 5;
+    const tempArray = [],
+      yArray = [];
+
+    content.forEach((el) => {
+      const value = el.str.trim();
+      if (el.x > 35 && el.x < col1X) {
+        if (
+          this.utilService.isValidDateWithoutPoint(value.trim()) ||
+          value.trim() == 'Promet:'
+        ) {
+          yArray.push(el.y);
+        }
+      }
+    });
+
+    for (let i = 0; i < yArray.length - 1; i++) {
+      const y = yArray[i],
+        nextY = yArray[i + 1];
+      const tempVal = {};
+      tempVal['sequence'] = i + 1;
+      tempVal['partnerAccountNumber'] = '';
+      tempVal['partnerName'] = '';
+      tempVal['itemDate'] = '';
+      tempVal['code'] = '';
+      tempVal['debitNumber'] = '';
+
+      content.forEach((el) => {
+        const value = el.str.trim();
+        if (value && el.y > y - margin && el.y < nextY - margin) {
+          const x = el.x;
+          if (x > 35 && x < col1X) {
+            if (this.utilService.isValidDateWithoutPoint(value.trim())) {
+              tempVal['itemDate'] = value.trim();
+            }
+          }
+          if (x > col2X && x < col3X) {
+            if (el.y < y + margin) {
+              tempVal['reference'] = value;
+            } else {
+              tempVal['purpose'] = this.utilService.setOrAppend(
+                tempVal['purpose'],
+                value.trim(),
+              );
+            }
+          }
+          if (x > col3X && x < col4X) {
+            tempVal['owes'] = value.trim();
+          }
+          if (x > col4X && x < col5X) {
+            tempVal['demands'] = value.trim();
+          }
+        }
+      });
+      tempArray.push(tempVal);
+    }
+
+    return tempArray;
+  }
 }
