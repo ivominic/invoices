@@ -86,13 +86,12 @@ export class PdfParseService {
         !retVal['bank'] &&
           (retVal = this.ziraatPdfService.parseForeignPdf(data));
         !retVal['bank'] && (retVal = this.adriaticPdfService.parsePdf(data));
+        !retVal['bank'] &&
+          (retVal = this.addikoPdfService.parseForeignPdf(data));
         /*         retVal = this.prvaPdfService.parsePdf(data);
-        !retVal['bank'] && (retVal = this.addikoPdfService.parsePdf(data));
         !retVal['bank'] && (retVal = this.ckbPdfService.parsePdf(data));
         !retVal['bank'] && (retVal = this.nlbPdfService.parsePdf(data));
-        !retVal['bank'] && (retVal = this.nlb2PdfService.parsePdf(data));
-        !retVal['bank'] && (retVal = this.ziraatPdfService.parsePdf(data));
-        !retVal['bank'] && (retVal = this.ziraatOldPdfService.parsePdf(data));*/
+        !retVal['bank'] && (retVal = this.nlb2PdfService.parsePdf(data));*/
       })
       .catch((err) => console.log(err));
     if (retVal['number']) {

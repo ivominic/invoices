@@ -296,4 +296,165 @@ export class AddikoPdfService {
     });
     return retVal;
   }
+
+  findForeignMaxY(content) {
+    let retVal = 0;
+    content.forEach((el) => {
+      const value = el.str.trim();
+      value && retVal < el.y && (retVal = el.y);
+    });
+    return retVal;
+  }
+
+  parseForeignPdf(data) {
+    let retVal = {};
+    const bankName = this.checkForeignBank(data.pages[0].content);
+    if (!bankName) {
+      return retVal;
+    } else {
+      retVal['bank'] = bankName;
+    }
+    const clientData = this.readForeignClientData(data.pages[0].content);
+    retVal = { ...retVal, ...clientData };
+
+    let tableArray = [];
+    for (let i = 0; i < data.pages.length; i++) {
+      const tempArray = this.readForeignMainTable(data.pages[i].content);
+      tableArray = [...tableArray, ...tempArray];
+    }
+    retVal['table'] = tableArray;
+
+    return retVal;
+  }
+
+  checkForeignBank(content) {
+    let name = '';
+    content.forEach((el) => {
+      if (
+        el.str.trim() === 'PROMET U DEVIZAMA' &&
+        el.x < 261 &&
+        el.x > 260 &&
+        el.y < 209 &&
+        el.y > 208
+      ) {
+        name = 'ADDIKO';
+      }
+    });
+    return name;
+  }
+
+  readForeignClientData(content) {
+    const retVal = {};
+
+    content.forEach((el) => {
+      const value = el.str.trim();
+      if (value) {
+        if (el.y > 66 && el.y < 67 && el.x === 339) {
+          retVal['name'] = el.str.trim();
+        }
+        if (
+          value.startsWith('ME') &&
+          el.y > 50 &&
+          el.y < 51 &&
+          el.x > 338 &&
+          el.x < 340
+        ) {
+          retVal['accountNumber'] = value.replaceAll(' ', '');
+        }
+        if (el.x > 108 && el.x < 110 && el.y > 189 && el.y < 190) {
+          const numberArray = el.str.trim().split('/');
+          retVal['number'] = this.utilService.formatExcerptNumber(
+            numberArray[0],
+          );
+          retVal['year'] = numberArray[1];
+        }
+        if (el.x === 71 && this.utilService.isValidDateWithoutPoint(value)) {
+          retVal['date'] = value;
+        }
+      }
+    });
+
+    return retVal;
+  }
+
+  readForeignMainTable(content) {
+    const col1X = 50,
+      col2X = 70,
+      col3X = 140,
+      col4X = 195,
+      col5X = 240,
+      col6X = 350,
+      col7X = 440,
+      col8X = 515;
+    const margin = 5;
+    const tempArray = [],
+      yArray = [];
+    const maxY = this.findForeignMaxY(content);
+
+    content.forEach((el) => {
+      const value = el.str.trim();
+      if (value && el.x < col1X) {
+        if (this.utilService.isNumberFollowedByDot(value)) {
+          yArray.push(el.y);
+        }
+      }
+    });
+    yArray.push(maxY - 50);
+
+    for (let i = 0; i < yArray.length - 1; i++) {
+      const y = yArray[i];
+      const nextY = yArray[i + 1];
+
+      const tempVal = {};
+      tempVal['partnerName'] = '';
+      tempVal['partnerAccountNumber'] = '';
+      tempVal['code'] = '';
+      tempVal['purpose'] = '';
+
+      content.forEach((el) => {
+        const value = el.str.trim();
+
+        if (value && el.y > y - margin && el.y < nextY - margin) {
+          const x = el.x;
+          if (el.y > y - margin && el.y < y + margin) {
+            if (x < col1X && this.utilService.isNumberFollowedByDot(value)) {
+              tempVal['sequenceNumber'] = value.slice(0, -1);
+            }
+            if (x > col2X && x < col3X) {
+              tempVal['itemDate'] = value;
+            }
+            if (x > col4X && x < col5X) {
+              tempVal['orderNumber'] = value;
+              tempVal['purpose'] = this.utilService.setOrAppend(
+                tempVal['purpose'],
+                value,
+              );
+            }
+            if (x > col6X && x < col7X) {
+              tempVal['owes'] = value.replaceAll(',', '');
+            }
+            if (x > col7X && x < col8X) {
+              tempVal['demands'] = value.replaceAll(',', '');
+            }
+            if (x > col8X) {
+              tempVal['additionalExpenses'] = value
+                .replaceAll(',', '')
+                .replace('EUR', '');
+            }
+          } else {
+            tempVal['purpose'] = this.utilService.setOrAppend(
+              tempVal['purpose'],
+              value,
+            );
+          }
+        }
+      });
+      tempVal['partnerName'] &&
+        (tempVal['purpose'] =
+          tempVal['partnerName'] + ' ' + tempVal['purpose']);
+      tempArray.push(tempVal);
+    }
+
+    return tempArray;
+  }
 }
