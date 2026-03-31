@@ -453,7 +453,7 @@ export class NlbPdfService {
           const x = el.x;
           if (x > 35 && x < col1X) {
             if (this.utilService.isValidDateWithoutPoint(value.trim())) {
-              tempVal['itemDate'] = value.trim();
+              tempVal['itemDate'] = value.trim() + '.';
             }
           }
           if (x > col2X && x < col3X) {

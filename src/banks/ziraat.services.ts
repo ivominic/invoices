@@ -377,7 +377,7 @@ export class ZiraatPdfService {
           }
           if (x > col3X && x < col4X) {
             if (this.utilService.isValidDate(value)) {
-              tempVal['itemDate'] = value;
+              tempVal['itemDate'] = value + '.';
             }
           }
           if (x > col4X && x < col5X) {

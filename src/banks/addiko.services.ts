@@ -421,7 +421,7 @@ export class AddikoPdfService {
               tempVal['sequenceNumber'] = value.slice(0, -1);
             }
             if (x > col2X && x < col3X) {
-              tempVal['itemDate'] = value;
+              tempVal['itemDate'] = value + '.';
             }
             if (x > col4X && x < col5X) {
               tempVal['orderNumber'] = value;
