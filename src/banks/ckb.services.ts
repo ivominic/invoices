@@ -497,4 +497,110 @@ export class CkbPdfService {
       second: input.substring(index + 1),
     };
   }
+
+  parsePdfCard(data) {
+    let retVal = {};
+    const bankName = this.checkBankCard(data.pages[0].content);
+    if (!bankName) {
+      return retVal;
+    }
+    retVal['bank'] = bankName;
+
+    const clientData = this.readClientDataCard(data.pages[0].content);
+    retVal = { ...retVal, ...clientData };
+
+    let tableArray = [];
+    const tempArray = this.readMainTableCard(data.pages[0].content);
+    tableArray = [...tableArray, ...tempArray];
+    retVal['table'] = tableArray;
+
+    return retVal;
+  }
+
+  checkBankCard(content) {
+    let name = '';
+    const text = 'www.ckb.me';
+    content.forEach((el) => {
+      if (el.str.trim() == text && el.x > 276 && el.x < 277 && el.y > 790) {
+        name = 'CKB';
+      }
+    });
+    return name;
+  }
+
+  readClientDataCard(content) {
+    const retVal = {};
+
+    content.forEach((el) => {
+      const value = el.str.trim();
+
+      if (value && el.x > 70 && el.x < 90 && el.y < 87 && el.y > 83) {
+        const tempArray = value.split(' ');
+        if (tempArray.length === 11) {
+          retVal['number'] = tempArray[3];
+          retVal['date'] = tempArray[6];
+        }
+      }
+      if (value && el.x > 158 && el.x < 161 && el.y < 210 && el.y > 207) {
+        retVal['accountNumber'] = value.trim();
+      }
+    });
+    retVal['year'] = retVal['date']?.substring(6, 10);
+
+    return retVal;
+  }
+
+  readMainTableCard(content) {
+    const col3X = 125,
+      col4X = 175,
+      col5X = 185,
+      col6X = 320,
+      col7X = 400,
+      col8X = 470;
+    const margin = 12;
+    const tempArray = [],
+      yArray = [];
+
+    content.forEach((el) => {
+      const value = el.str.trim();
+      if (
+        value &&
+        el.x > col3X &&
+        el.x < col4X &&
+        this.utilService.isValidDateWithoutPoint(value)
+      ) {
+        yArray.push(el.y);
+      }
+    });
+
+    for (let i = 0; i < yArray.length; i++) {
+      const y = yArray[i];
+      const tempVal = {};
+      tempVal['sequenceNumber'] = i + 1;
+      tempVal['partnerAccountNumber'] = '';
+      tempVal['partnerName'] = '';
+      tempVal['demands'] = 0;
+
+      content.forEach((el) => {
+        const value = el.str.trim();
+        if (value && el.y > y - margin && el.y < y + margin) {
+          if (el.x > col3X && el.x < col4X) {
+            tempVal['itemDate'] = value + '.';
+          }
+          if (el.x > col5X && el.x < col6X) {
+            tempVal['purpose'] = this.utilService.setOrAppend(
+              tempVal['purpose'],
+              value,
+            );
+          }
+          if (el.x > col7X && el.x < col8X) {
+            tempVal['owes'] = value.replaceAll('.', '').replaceAll(',', '.');
+          }
+        }
+      });
+      tempArray.push(tempVal);
+    }
+
+    return tempArray;
+  }
 }
