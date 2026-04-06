@@ -87,10 +87,6 @@ export class PdfParseService {
         !retVal['bank'] && (retVal = this.adriaticPdfService.parsePdf(data));
         !retVal['bank'] &&
           (retVal = this.addikoPdfService.parseForeignPdf(data));
-        /*         retVal = this.prvaPdfService.parsePdf(data);
-        !retVal['bank'] && (retVal = this.ckbPdfService.parsePdf(data));
-        !retVal['bank'] && (retVal = this.nlbPdfService.parsePdf(data));
-        !retVal['bank'] && (retVal = this.nlb2PdfService.parsePdf(data));*/
       })
       .catch((err) => console.log(err));
     if (retVal['number']) {
@@ -111,6 +107,7 @@ export class PdfParseService {
         !retVal['bank'] && (retVal = this.adriaticPdfService.parsePdf(data));
         !retVal['bank'] &&
           (retVal = this.hipotekarnaPdfService.parsePdfCard(data));
+        !retVal['bank'] && (retVal = this.prvaPdfService.parsePdfCard(data));
       })
       .catch((err) => console.log(err));
     if (retVal['number']) {

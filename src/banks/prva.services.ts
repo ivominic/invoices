@@ -481,4 +481,122 @@ export class PrvaPdfService {
 
     return tempArray;
   }
+
+  parsePdfCard(data) {
+    let retVal = {};
+    let bankName = this.checkBankCard(data.pages[0].content);
+    if (!bankName) {
+      bankName = this.checkBankRegenerated(data.pages[0].content);
+      if (!bankName) {
+        return retVal;
+      }
+    }
+    retVal['bank'] = bankName;
+
+    const clientData = this.readClientDataCard(data.pages[0].content);
+    retVal = { ...retVal, ...clientData };
+
+    let tableArray = [];
+    for (let i = 0; i < data.pages.length; i++) {
+      const tempArray = this.readMainTableCard(data.pages[i].content);
+      tableArray = [...tableArray, ...tempArray];
+    }
+    retVal['table'] = tableArray;
+
+    return retVal;
+  }
+
+  checkBankCard(content) {
+    let name = '';
+    const searchText = 'PRVA BANKA CRNE GORE PODGORICA';
+    content.forEach((el) => {
+      if (el.str.trim() === searchText && el.x < 30 && el.y < 40) {
+        name = 'PRVA';
+      }
+    });
+    return name;
+  }
+
+  readClientDataCard(content) {
+    const retVal = {};
+    retVal['number'] = 1; // No number on invoice. It is going to be assigned after parsing, as current number + 1
+
+    content.forEach((el) => {
+      const value = el.str.trim();
+      if (value) {
+        const x = el.x,
+          y = el.y;
+        if (y > 100 && y < 110 && x > 470 && x < 500) {
+          retVal['name'] = value;
+        }
+        if (y > 100 && y < 110 && x > 340 && x < 400) {
+          retVal['accountNumber'] = value;
+        }
+        if (y > 100 && y < 110 && x > 340 && x < 400) {
+          retVal['accountNumber'] = value;
+        }
+        if (y === 37 && x === 740) {
+          retVal['date'] = value.replace('Datum:', '');
+        }
+      }
+    });
+    retVal['year'] = retVal['date']?.substring(6, 10);
+
+    return retVal;
+  }
+
+  readMainTableCard(content) {
+    const col1X = 35,
+      col3X = 175,
+      col4X = 320,
+      col8X = 590,
+      col9X = 660,
+      col10X = 735;
+    const margin = 2;
+    const tempArray = [],
+      yArray = [];
+
+    content.forEach((el) => {
+      const value = el.str.trim();
+      if (value && el.x < col1X) {
+        if (this.utilService.isValidDateWithoutPoint(value)) {
+          yArray.push(el.y);
+        }
+      }
+    });
+
+    for (let i = 1; i < yArray.length; i++) {
+      const y = yArray[i];
+      const tempVal = {};
+      tempVal['sequenceNumber'] = i;
+      tempVal['partnerAccountNumber'] = '';
+      tempVal['partnerName'] = '';
+
+      content.forEach((el) => {
+        const value = el.str.trim();
+        if (value && el.y > y - margin && el.y < y + margin) {
+          const x = el.x;
+          if (x < col1X && this.utilService.isValidDateWithoutPoint(value)) {
+            tempVal['itemDate'] = value + '.';
+          }
+          if (x > col3X && x < col4X) {
+            tempVal['purpose'] = this.utilService.setOrAppend(
+              tempVal['purpose'],
+              value,
+            );
+          }
+
+          if (x > col8X && x < col9X) {
+            tempVal['owes'] = value.replaceAll(',', '');
+          }
+          if (x > col9X && x < col10X) {
+            tempVal['demands'] = value.replaceAll(',', '');
+          }
+        }
+      });
+      tempArray.push(tempVal);
+    }
+
+    return tempArray;
+  }
 }
