@@ -530,7 +530,9 @@ export class PrvaPdfService {
           retVal['number'] = match ? match[1] : null;
         }
         if (y > 275 && y < 285 && x > 95 && x < 100) {
-          retVal['accountNumber'] = value;
+          retVal['accountNumber'] = value
+            .replaceAll('-', '')
+            .replaceAll('.', '');
         }
         if (
           x > 100 &&
