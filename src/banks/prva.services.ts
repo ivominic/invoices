@@ -482,14 +482,135 @@ export class PrvaPdfService {
     return tempArray;
   }
 
+  parsePdfForeign(data) {
+    let retVal = {};
+    const bankName = this.checkBankForeign(data.pages[0].content);
+    if (!bankName) {
+      return retVal;
+    }
+    retVal['bank'] = bankName;
+
+    const clientData = this.readClientDataForeign(data.pages[0].content);
+    retVal = { ...retVal, ...clientData };
+
+    let tableArray = [];
+    for (let i = 0; i < data.pages.length; i++) {
+      const tempArray = this.readMainTableForeign(data.pages[i].content);
+      tableArray = [...tableArray, ...tempArray];
+    }
+    retVal['table'] = tableArray;
+
+    return retVal;
+  }
+
+  checkBankForeign(content) {
+    let name = '';
+    const searchText = 'PRVA BANKA CRNE GORE';
+    content.forEach((el) => {
+      if (el.str.trim() === searchText && el.x < 30 && el.y < 40) {
+        name = 'PRVA';
+      }
+    });
+    return name;
+  }
+
+  readClientDataForeign(content) {
+    const retVal = {};
+
+    content.forEach((el) => {
+      const value = el.str.trim();
+      if (value) {
+        const x = el.x,
+          y = el.y;
+        if (y > 162 && y < 164 && x > 340 && x < 342) {
+          retVal['name'] = value;
+        }
+        if (y > 170 && y < 175 && x > 25 && x < 30) {
+          const match = value.match(/br\.(\d+)\//);
+          retVal['number'] = match ? match[1] : null;
+        }
+        if (y > 275 && y < 285 && x > 95 && x < 100) {
+          retVal['accountNumber'] = value;
+        }
+        if (
+          x > 100 &&
+          x < 105 &&
+          this.utilService.isValidDateWithoutPoint(value)
+        ) {
+          retVal['date'] = value;
+        }
+      }
+    });
+    retVal['year'] = retVal['date']?.substring(6, 10);
+
+    return retVal;
+  }
+
+  readMainTableForeign(content) {
+    const col3X = 100,
+      col4X = 150,
+      col5X = 260,
+      col9X = 420,
+      col10X = 495;
+    const margin = 2;
+    const tempArray = [],
+      yArray = [];
+
+    content.forEach((el) => {
+      const value = el.str.trim();
+      if (value && el.x > col3X && el.x < col4X) {
+        if (this.utilService.isValidDateWithoutPoint(value)) {
+          yArray.push(el.y);
+        }
+      }
+    });
+
+    for (let i = 0; i < yArray.length; i++) {
+      const y = yArray[i];
+      const tempVal = {};
+      tempVal['sequenceNumber'] = i + 1;
+      tempVal['partnerAccountNumber'] = '';
+      tempVal['partnerName'] = '';
+      tempVal['owes'] = '0.00';
+      tempVal['demands'] = '0.00';
+
+      content.forEach((el) => {
+        const value = el.str.trim();
+        if (value && el.y > y - margin && el.y < y + margin) {
+          const x = el.x;
+          if (
+            x > col3X &&
+            x < col4X &&
+            this.utilService.isValidDateWithoutPoint(value)
+          ) {
+            tempVal['itemDate'] = value + '.';
+          }
+          if (x > col4X && x < col5X) {
+            tempVal['purpose'] = this.utilService.setOrAppend(
+              tempVal['purpose'],
+              value,
+            );
+          }
+
+          if (x > col9X && x < col10X) {
+            tempVal['owes'] = value.replaceAll(',', '');
+          }
+          if (x > col10X) {
+            tempVal['demands'] = value.replaceAll(',', '');
+          }
+        }
+      });
+      tempArray.push(tempVal);
+    }
+
+    return tempArray;
+  }
+
   parsePdfCard(data) {
     let retVal = {};
-    let bankName = this.checkBankCard(data.pages[0].content);
+    const bankName = this.checkBankCard(data.pages[0].content);
     if (!bankName) {
-      bankName = this.checkBankRegenerated(data.pages[0].content);
-      if (!bankName) {
-        return retVal;
-      }
+      return retVal;
     }
     retVal['bank'] = bankName;
 
@@ -571,6 +692,8 @@ export class PrvaPdfService {
       tempVal['sequenceNumber'] = i;
       tempVal['partnerAccountNumber'] = '';
       tempVal['partnerName'] = '';
+      tempVal['owes'] = '0.00';
+      tempVal['demands'] = '0.00';
 
       content.forEach((el) => {
         const value = el.str.trim();

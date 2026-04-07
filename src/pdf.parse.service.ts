@@ -71,7 +71,6 @@ export class PdfParseService {
     await pdfExtract
       .extract('./files/' + file, options)
       .then((data) => {
-        //retVal = data;
         retVal = this.ckbPdfService.parseForeignPdf(data);
         !retVal['bank'] &&
           (retVal = this.zapadPdfService.parseForeignPdf(data));
@@ -87,6 +86,8 @@ export class PdfParseService {
         !retVal['bank'] && (retVal = this.adriaticPdfService.parsePdf(data));
         !retVal['bank'] &&
           (retVal = this.addikoPdfService.parseForeignPdf(data));
+        !retVal['bank'] && (retVal = this.prvaPdfService.parsePdfForeign(data));
+        //retVal = data;
       })
       .catch((err) => console.log(err));
     if (retVal['number']) {
