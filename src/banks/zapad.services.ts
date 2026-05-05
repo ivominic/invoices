@@ -19,6 +19,161 @@ export class ZapadPdfService {
     let tableArray = [];
     for (let i = 0; i < data.pages.length; i++) {
       const tempArray = this.readMainTable(data.pages[i].content);
+      //const tempAdditionalData = this.readSummaryTable(data.pages[i].content);
+      //retVal = { ...retVal, ...tempAdditionalData };
+      tableArray = [...tableArray, ...tempArray];
+    }
+    retVal['table'] = tableArray;
+
+    return retVal;
+  }
+
+  checkBank(content) {
+    let name = '';
+    const searchText1 = 'IZVOD BR. ',
+      searchText2 = 'ZA DAN ';
+    let counter = 0;
+    content.forEach((el) => {
+      if (el.str.trim().startsWith(searchText1) && el.x < 320 && el.y < 75) {
+        counter++;
+      }
+      if (el.str.trim().startsWith(searchText2) && el.x < 400 && el.y < 90) {
+        counter++;
+      }
+    });
+    if (counter === 2) {
+      name = 'ZAPAD';
+    }
+    return name;
+  }
+
+  readClientData(content) {
+    const titleStart: string = 'IZVOD BR. ',
+      dateStart = 'ZA DAN ';
+    const retVal = {};
+
+    content.forEach((el) => {
+      const value = el.str.trim();
+      if (value) {
+        const x = el.x;
+        const y = el.y;
+        if (el.str.trim().startsWith(titleStart) && x < 320 && y < 75) {
+          const numberArray = el.str.trim().split(' ');
+          retVal['number'] = numberArray[2];
+          retVal['accountNumber'] = this.utilService.formatDomesticAccount(
+            numberArray[5],
+          );
+        }
+        if (el.str.startsWith(dateStart) && x < 400 && el.y < 90) {
+          const dateArray = el.str.trim().split(' ');
+          retVal['date'] = dateArray[2];
+        }
+        if (x > 71 && x < 75 && y > 100 && y < 105) {
+          retVal['name'] = value;
+        }
+      }
+    });
+    retVal['year'] = retVal['date']?.substring(6, 10);
+
+    return retVal;
+  }
+
+  readMainTable(content) {
+    const col1X = 25,
+      col2X = 50,
+      col3X = 260,
+      col4X = 330,
+      col5X = 380,
+      col6X = 450,
+      col7X = 520,
+      col8X = 650,
+      col9X = 700;
+    const margin = 14;
+    const tempArray = [],
+      yArray = [];
+
+    content.forEach((el) => {
+      const value = el.str.trim();
+      if (value && el.x < col1X && !isNaN(value)) {
+        yArray.push(el.y);
+      }
+    });
+
+    for (let i = 0; i < yArray.length; i++) {
+      const y = yArray[i];
+      const tempVal = {};
+      tempVal['owes'] = '0';
+      tempVal['demands'] = '0';
+      tempVal['code'] = '';
+
+      content.forEach((el) => {
+        const value = el.str.trim();
+        if (value && el.y > y - margin && el.y < y + margin) {
+          const x = el.x;
+          if (x <= col1X && !isNaN(value)) {
+            tempVal['sequence'] = value;
+          }
+          if (x > col2X && x < col3X) {
+            if (this.utilService.isDomesticAccount(value)) {
+              tempVal['partnerAccountNumber'] =
+                this.utilService.formatDomesticAccount(value);
+            } else {
+              tempVal['partnerName'] = this.utilService.setOrAppend(
+                tempVal['partnerName'],
+                value,
+              );
+            }
+          }
+          if (x >= col4X && x < col5X) {
+            tempVal['transactionNumber'] = value;
+          }
+          if (x >= col5X && x < col6X) {
+            tempVal['owes'] = value.replaceAll('.', '').replace(',', '.');
+          }
+          if (x >= col6X && x < col7X) {
+            tempVal['demands'] = value.replaceAll('.', '').replace(',', '.');
+          }
+          if (x >= col7X && x < col8X) {
+            tempVal['purpose'] = this.utilService.setOrAppend(
+              tempVal['purpose'],
+              value,
+            );
+          }
+          if (x > col9X) {
+            if (value.startsWith('PBZ:')) {
+              tempVal['debitNumber'] = value;
+            }
+            if (value.startsWith('PBO:')) {
+              tempVal['approvalNumber'] = value;
+            }
+          }
+        }
+      });
+      tempVal['partnerName'] &&
+        (tempVal['purpose'] =
+          tempVal['partnerName'] + ' ' + tempVal['purpose']);
+      tempVal['debitNumber'] = tempVal['debitNumber']?.substring(3);
+      tempVal['approvalNumber'] = tempVal['approvalNumber']?.substring(3);
+      tempArray.push(tempVal);
+    }
+
+    return tempArray;
+  }
+
+  /*parsePdf(data) {
+    let retVal = {};
+    const bankName = this.checkBank(data.pages[0].content);
+    if (!bankName) {
+      return retVal;
+    } else {
+      retVal['bank'] = bankName;
+    }
+    const clientData = this.readClientData(data.pages[0].content);
+    retVal = { ...retVal, ...clientData };
+
+    let tableArray = [];
+    for (let i = 0; i < data.pages.length; i++) {
+      const tempArray = this.readMainTable(data.pages[i].content);
       const tempAdditionalData = this.readSummaryTable(data.pages[i].content);
       retVal = { ...retVal, ...tempAdditionalData };
       tableArray = [...tableArray, ...tempArray];
@@ -217,6 +372,7 @@ export class ZapadPdfService {
 
     return tempArray;
   }
+*/
 
   parseForeignPdf(data) {
     let retVal = {};
@@ -232,8 +388,8 @@ export class ZapadPdfService {
     let tableArray = [];
     for (let i = 0; i < data.pages.length; i++) {
       const tempArray = this.readForeignMainTable(data.pages[i].content);
-      const tempAdditionalData = this.readSummaryTable(data.pages[i].content);
-      retVal = { ...retVal, ...tempAdditionalData };
+      //const tempAdditionalData = this.readSummaryTable(data.pages[i].content);
+      //retVal = { ...retVal, ...tempAdditionalData };
       tableArray = [...tableArray, ...tempArray];
     }
     retVal['table'] = tableArray;
