@@ -59,7 +59,7 @@ export class Universal3PdfService {
           retVal['accountNumber'] =
             this.utilService.formatDomesticAccount(value);
         }
-        if (x > 700 && x < 750 && y > 130 && y < 140) {
+        if (x > 700 && x < 750 && y > 130 && y < 150) {
           retVal['number'] = parseInt(value).toString();
         }
         if (x > 300 && x < 320 && y > 90 && y < 100) {
